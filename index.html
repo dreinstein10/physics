@@ -5,16 +5,137 @@
   <meta charset="utf-8">
   <link rel="icon" href="https://visionmw.com/jamc/favicon.ico">
   <title>STM</title>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='./js/physicalConstants.js'></script>
 </head>
 
 <body>
   <h1>Scanning Tunneling Microscopy (STM)</h1>
-  <h2>A collection of tools for STMing</h2>
+  <h2><em>A collection of tools for STMing</em></h2>
+  <h4>Open Source Code (Github): <a href="https://github.com/dreinstein10/stm.git">https://github.com/dreinstein10/stm.git</a></h4>
+  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <hr><br>
+  <div class="electron_wave_funct">
+    <a>For an electron at sample-gap-tip junction, the one-dimensional Schrödinger equation is solved by the (not normalized) wave function: \begin{equation} \psi(z) \propto e^{\pm ikz} \ \ ,\ \  k=\sqrt{\frac{2 m_e E}{\hbar^2}} \end{equation}</a>
+    <br>
+    <a>The Transmission coeffcient is given by: \begin{equation} T = e^{-2 \alpha z} \ \ ,\ \ where \ \ \alpha=\sqrt{\frac{2 m_e (U_0-E)}{\hbar^2}} \end{equation}</a>
+  </div>
+  <!-- Wave function solver-->
+  <div class="wave_funct_solver">
 
-  <h3>Source Code (Github):</h3>
-  <a href="https://github.com/dreinstein10/stm.git">https://github.com/dreinstein10/stm.git</a>
+    <form id="form">
+      <!--
+      <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
+      <label for="eq">Equation</label><br>-->
+      <input type="text" id="energyP" value="8" />
+      <label for="energyP">(E) Particle Energy [eV] <a id="out_energy_J"></a></label><br>
+      <input id="vHeight" type="text" value="10" />
+      <label for="vHeight"> (Uo) Barrier Height [eV]<a id="out_vHeight_J"></a></label><br>
+      <input id="vWidth" type="text" value="0.25" />
+      <label for="vWidth">(z) Barrier Width [nm]</label><br>
+      <input type="submit" value="Run" /><br>
+      <p><a>Transmission coefficient: </a><a id="out_transmission"></a></p>
+    </form>
 
-  <h2></h2>
+    <div id="plot"></div>
+    <script>
+      function draw() {
+        try {
+          const limit = 2
+          const step = 0.01
+          const energyP = document.getElementById('energyP').value
+          const vHeight = document.getElementById('vHeight').value
+          const vWidth = document.getElementById('vWidth').value
+          if (vWidth > limit) {
+            const limit = vWidth * 2
+            const step = limit / 50
+          }
+          const xValues = math.range(-limit, limit, step).toArray()
+          /*
+          const expression = document.getElementById('eq').value
+          const expr = math.compile(expression)
+          const yValues = xValues.map(function(x) {
+            return expr.eval({
+              x: x
+            })
+          })*/
+          const energyValues = Array(xValues.length).fill(energyP);
+          const potentialValues = math.zeros(xValues.length).toArray();
+          potentialValues.fill(vHeight, limit / step, limit / step + vWidth / step)
+          const waveNumber = math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar)) // wavenumber
+          let wavefunction1 = math.add(math.re(math.exp(math.multiply(-2, math.i, waveNumber, xValues, 1E-9))), energyP)
+          let transmission = math.exp(-2 * (vWidth * 1E-9) * math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar)))
+          let wavefunction3 = math.add(math.multiply(math.re(math.exp(math.multiply(-2, math.i, waveNumber, xValues, 1E-9))), transmission), energyP)
+          let wavefunction = [...wavefunction1.slice(0, limit / step), ...energyValues.slice(limit / step, limit / step + vWidth / step), ...wavefunction3.slice(limit / step + vWidth / step)]
+          //let wavefunction = wavefunction1
+          wavefunction.fill(energyP, limit / step, limit / step + vWidth / step)
+          document.getElementById("out_energy_J").innerHTML = ' \ \ => ( ' + (energyP * e) + ' [J])';
+          document.getElementById("out_vHeight_J").innerHTML = ' \ \ => ( ' + (vHeight * e) + ' [J])';
+          document.getElementById("out_transmission").innerHTML = transmission;
+          console.log(wavefunction.length + ' = ' + wavefunction3.length + "wavefunction: " + wavefunction);
+          console.log("T: " + transmission);
+          // render the plot using plotly
+          const waveFunct = {
+            x: xValues,
+            y: wavefunction,
+            type: 'scatter',
+            name: 'Wave Function Probability'
+          }
+          const energyTrace = {
+            x: xValues,
+            y: energyValues,
+            type: 'scatter',
+            name: 'Particle Energy',
+            mode: 'lines',
+            line: {
+              dash: 'dot',
+              width: 2,
+            }
+          }
+          const potentialBarrier = {
+            x: xValues,
+            y: potentialValues,
+            type: 'scatter',
+            name: 'Potential Barrier',
+            mode: 'lines',
+            line: {
+              shape: 'hv'
+            }
+          }
+          var layout = {
+            //title: 'Free electron & potential barrier',
+            xaxis: {
+              title: 'X [nm]',
+              autorange: true
+            },
+            yaxis: {
+              title: 'Energy [eV]',
+              autorange: true
+            }
+          };
+
+          const data = [waveFunct, energyTrace, potentialBarrier]
+          Plotly.newPlot('plot', data, layout)
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+
+      document.getElementById('form').onsubmit = function(event) {
+        event.preventDefault()
+        draw()
+      }
+
+      draw()
+    </script>
+  </div>
 </body>
 
 </html>
