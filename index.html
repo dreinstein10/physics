@@ -22,9 +22,16 @@
   <a><em> *(There could be errors in the code, so please double check your results)</em></a>
   <hr><br>
   <div class="electron_wave_funct">
-    <a>For an electron at sample-gap-tip junction, the one-dimensional Schrödinger equation is solved by the (not normalized) wave function: \begin{equation} \psi(z) \propto e^{\pm ikz} \ \ ,\ \  k=\sqrt{\frac{2 m_e E}{\hbar^2}} \end{equation}</a>
+    <a>The basic example for the tunneling phenomenon is the free particle and the potential barrier of height Uo and width L, where the energy particle is smaller than the potential barrier.<br>
+      The wavefunctions for the 3 regions are:
+      \begin{equation} \psi_I(z) = e^{ik_1x}+re^{-ik_1x} \ \ ,\ \  k_1=\sqrt{\frac{2 m_e E}{\hbar^2}} \end{equation}
+      \begin{equation} \psi_{II}(z) = Ae^{ik_2x}+Be^{-ik_2x} \ \ ,\ \  k_2=\sqrt{\frac{2 m_e (Uo-E)}{\hbar^2}} \end{equation}
+      \begin{equation} \psi_{III}(z) = te^{ik_3x} \ \ ,\ \  k_3=k_1=\sqrt{\frac{2 m_e E}{\hbar^2}} \end{equation}
+    </a>
     <br>
-    <a>The Transmission coeffcient is given by: \begin{equation} T = e^{-2 \alpha z} \ \ ,\ \ where \ \ \alpha=\sqrt{\frac{2 m_e (U_0-E)}{\hbar^2}} \end{equation}</a>
+    <a>Solving for t gives: \begin{equation} t =\frac{2k_1k_2e^{-ik_1L}}{2k_1k_2cos(k_2L)-i(k_1^2+k_2^2)sin(k_2L)} \end{equation}</a>
+    <a>which means a transmissivity of: \begin{equation} T = /t/^2 = \frac{1}{1+\frac{1}{4}(\frac{k_1}{k_2}-\frac{k_2}{k_1})^2 \sin^2(k_2L)} \end{equation}</a>
+    <a>The Transmission coeffcient is also given by?: \begin{equation} T = e^{-2 \alpha z} \ \ ,\ \ where \ \ \alpha=\sqrt{\frac{2 m_e (U_0-E)}{\hbar^2}} \end{equation}</a>
   </div>
   <!-- Wave function solver-->
   <div class="wave_funct_solver">
@@ -47,16 +54,16 @@
     <script>
       function draw() {
         try {
-          const limit = 2
-          const step = 0.01
+          const limit = 2e-9
+          const step = 0.01e-9
           const energyP = document.getElementById('energyP').value
           const vHeight = document.getElementById('vHeight').value
-          const vWidth = document.getElementById('vWidth').value
+          const vWidth = math.multiply(document.getElementById('vWidth').value, 1E-9)
           if (vWidth > limit) {
             const limit = vWidth * 2
             const step = limit / 50
           }
-          const xValues = math.range(-limit, limit, step).toArray()
+          let xValues = math.range(-limit, limit, step).toArray()
           /*
           const expression = document.getElementById('eq').value
           const expr = math.compile(expression)
@@ -68,24 +75,34 @@
           const energyValues = Array(xValues.length).fill(energyP);
           const potentialValues = math.zeros(xValues.length).toArray();
           potentialValues.fill(vHeight, limit / step, limit / step + vWidth / step)
-          const waveNumber = math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar)) // wavenumber
-          let wavefunction1 = math.add(math.re(math.exp(math.multiply(-2, math.i, waveNumber, xValues, 1E-9))), energyP)
-          let transmission = math.exp(-2 * (vWidth * 1E-9) * math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar)))
-          let wavefunction3 = math.add(math.multiply(math.re(math.exp(math.multiply(-2, math.i, waveNumber, xValues, 1E-9))), transmission), energyP)
-          let wavefunction = [...wavefunction1.slice(0, limit / step), ...energyValues.slice(limit / step, limit / step + vWidth / step), ...wavefunction3.slice(limit / step + vWidth / step)]
+          const kappa1 = math.sqrt(2 * me * (energyP * e) / (hbar * hbar))
+          const kappa2 = math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar))
+          let transmission = math.exp(-2 * vWidth * math.sqrt(2 * me * (vHeight * e - energyP * e) / (hbar * hbar)))
+          let transmission2 = 1 / (1 + 0.25 * (kappa1 / kappa2 - kappa2 / kappa1) * (kappa1 / kappa2 - kappa2 / kappa1) * math.sin(kappa2 * vWidth) * math.sin(kappa2 * vWidth))
+          let wavefunction1 = math.re(math.exp(math.multiply(math.i, kappa1, xValues)))
+          let wavefunction2 = math.multiply(wavefunction1[parseInt(limit / step)], math.exp(math.multiply(-2, kappa2, xValues)))
+          let wavefunction3 = math.multiply(math.re(math.exp(math.multiply(math.i, kappa1, math.add(xValues, -vWidth)))), transmission)
+          let wavefunction = [...wavefunction1.slice(0, limit / step), ...wavefunction2.slice(limit / step, limit / step + vWidth / step), ...wavefunction3.slice(limit / step + vWidth / step)]
+          let probability = math.multiply(wavefunction1, 0.5)
           //let wavefunction = wavefunction1
-          wavefunction.fill(energyP, limit / step, limit / step + vWidth / step)
           document.getElementById("out_energy_J").innerHTML = ' \ \ => ( ' + (energyP * e) + ' [J])';
           document.getElementById("out_vHeight_J").innerHTML = ' \ \ => ( ' + (vHeight * e) + ' [J])';
-          document.getElementById("out_transmission").innerHTML = transmission;
-          console.log(wavefunction.length + ' = ' + wavefunction3.length + "wavefunction: " + wavefunction);
-          console.log("T: " + transmission);
+          document.getElementById("out_transmission").innerHTML = transmission + ' ==> ' + transmission2;
+          console.log("kappa1: " + kappa1 + " kappa2: " + kappa2);
+          console.log("T: " + wavefunction1[parseInt(limit / step)]);
           // render the plot using plotly
+          xValues = math.multiply(xValues, 1E9)
           const waveFunct = {
             x: xValues,
             y: wavefunction,
             type: 'scatter',
-            name: 'Wave Function Probability'
+            name: 'Wave Function'
+          }
+          const prob = {
+            x: xValues,
+            y: wavefunction,
+            type: 'scatter',
+            name: 'Probability Density Function'
           }
           const energyTrace = {
             x: xValues,
