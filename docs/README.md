@@ -1,21 +1,26 @@
-## Scanning Tunneling Microscopy (STM)
+# Physics
 
-You can use the [editor on GitHub](https://github.com/dreinstein10/stm/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+The idea behind this project is to build a collection of dynamic tools accessible online to solve problems numerically for a variety of topics.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The list of topics oup to now is this:
+- [STM](/STM/)
+- [Electromagnetism](/electromagnetism/)
+- [PiezoScanner](/Piezo/)
+- [THz-STM](/thzstm/)
 
-# Header 1
+
+# [Physics.Scientar.com](https://physics.scientar.com)
+
+.
+.
+.
 ## Header 2
 ### Header 3
-
-- Bulleted
-- List
 
 1. Numbered
 2. List
 
 **Bold** and _Italic_ and `Code` text
-
 [Link](url) and ![Image](src)
 ```
 
