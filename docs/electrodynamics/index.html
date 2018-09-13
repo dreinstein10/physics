@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Electromagnetism</title>
+  <title>Electrodynamics</title>
   <meta charset="utf-8">
   <link rel="icon" href="../../assets/favicon.ico">
   <script type="text/x-mathjax-config">
@@ -21,7 +21,7 @@
 
 <body style="width:90%;margin: auto;">
   <div style="text-align:center;">
-    <h1>Electromagnetism (EM)</h1>
+    <h1>Electrodynamics</h1>
     <h2><em>A collection of online tools</em></h2>
   </div>
   <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
@@ -55,6 +55,7 @@
       <label for="q2"> $q_2$ Electric charge 2 [C] <a id="out_q2_J"></a></label><br>
       <input id="r21" type="text" value="1E-10" />
       <label for="r21">$r_{21}$ Distance (Magnitude) [m]</label><br>
+      <input type="submit" value="Run" /><br>
       <p><a>Force on particle 2:  /$F_2$/=</a><strong><a id="out_force1"></a></strong></p>
       <p><a>Work:  W=</a><strong><a id="out_work1"></a></strong></p>
     </form>
@@ -78,9 +79,10 @@
           alert(err)
         }
       }
-      document.getElementById('form').addEventListener("input", function() {
+      document.getElementById('form').onsubmit = function(event) {
+        event.preventDefault()
         CoulombsLaw()
-      });
+      }
       CoulombsLaw()
     </script>
   </div>

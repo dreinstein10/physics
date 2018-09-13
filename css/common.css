@@ -1,0 +1,19 @@
+.dashedBorder {
+  border-width: 2px;
+  border-style: dashed;
+  padding: 1em;
+  margin: 1em;
+}
+
+.headerImg {
+  max-width: 300px;
+  max-height: 300px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.oneRowImg {
+  max-width: 300px;
+  max-height: 300px;
+}

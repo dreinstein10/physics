@@ -2,9 +2,14 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <link rel="icon" href="https://visionmw.com/jamc/favicon.ico">
   <title>STM</title>
+  <!--<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script>
+    $("#header").load("../header.html");
+  //$("#footer").load("footer.html");
+  </script>-->
+  <meta charset="utf-8">
+  <link rel="icon" href="../../assets/favicon.ico">
   <script type="text/x-mathjax-config">
     MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
   </script>
@@ -15,7 +20,8 @@
   <!-- MathJax to write equations in html-->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
   <!-- Imports Physical Constants -->
-  <script src='./js/physicalConstants.js'></script>
+  <script src='../../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../../css/common.css" />
 </head>
 
 <body style="width:90%;margin: auto;">
@@ -23,14 +29,17 @@
     <h1>Scanning Tunneling Microscopy (STM)</h1>
     <h2><em>A collection of online tools for STMing</em></h2>
   </div>
-  <h4>Open Source Code: <a href="https://github.com/dreinstein10/stm.git">Github</a></h4>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
   <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <br>
+  <a><img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/ScanningTunnelingMicroscope_schematic.png" class="headerImg"/></a>
   <hr>
   <h3>Related Topics</h3>
   <ul>
-    <li><a href="./piezo/index.html">Piezoelectric Actuators</a></li>
+    <li><a href="./piezoscanner/index.html">Piezoelectric Actuators</a></li>
     <li><a href="./thzstm/index.html">THz-STM</a></li>
   </ul>
+
   <hr><br>
   <div class="electron_wave_funct">
     <a>The basic example to understand the tunneling phenomenon is the free particle and the potential barrier of height Uo and width L, where the energy particle E < Uo .<br>
@@ -45,7 +54,7 @@
     <a>The Transmission coeffcient is also given by?: \begin{equation} T = e^{-2 \alpha z} \ \ ,\ \ where \ \ \alpha=\sqrt{\frac{2 m_e (U_0-E)}{\hbar^2}} \end{equation}</a>
   </div>
   <!-- Wave function solver-->
-  <div class="wave_funct_solver">
+  <div class="wave_funct_solver dashedBorder">
     <form id="form">
       <!--
       <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
@@ -56,7 +65,6 @@
       <label for="vHeight"> (Uo) Barrier Height [eV]<a id="out_vHeight_J"></a></label><br>
       <input id="vWidth" type="text" value="0.25" />
       <label for="vWidth">(z) Barrier Width [nm]</label><br>
-      <input type="submit" value="Run" /><br>
       <p><a>Transmission coefficient: </a><a id="out_transmission"></a></p>
     </form>
 
@@ -154,12 +162,9 @@
           alert(err)
         }
       }
-
-      document.getElementById('form').onsubmit = function(event) {
-        event.preventDefault()
+      document.getElementById('form').addEventListener("input", function() {
         draw()
-      }
-
+      });
       draw()
     </script>
   </div>

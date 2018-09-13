@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Piezo Scanner</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="../../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../../css/common.css" />
+</head>
+
+<body>
+  <h1>Piezoelectric Scanner</h1>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <a><em> *(If you find any errors in the code, please let me know)</em></a>
+  <br>
+  <a><img src="https://static.piceramic.com/fileadmin/user_upload/pi_ceramic/IMG/PI_Axial_Displacement_Tubes.png" class="oneRowImg"/></a>
+  <a><img src="https://static.piceramic.com/fileadmin/user_upload/pi_ceramic/IMG/PI_Bending_Actuators_XY_Scanning_Tubes.png" class="oneRowImg"/></a>
+  <br><a>*Pictures taken from: </a><a href="https://www.piceramic.com/en/piezo-technology/properties-piezo-actuators/displacement-modes/">www.piceramic.com</a>
+  <hr>
+  <div class="text">
+    <a>The axial displacement of a tube actuator can be estimated by:
+      \begin{equation} \Delta L_{axial} = d_{31(GS)} \frac{l}{t} V \end{equation}
+      Whereas the lateral displacement can be estimated by:
+      \begin{equation} \Delta L_{lateral} = 0.9 d_{31(GS)} \frac{l^2}{(ID+t)t} V \end{equation}
+    </a>
+    <a>According to AmericanPiezo.com \cite{americanPiezo} the capacitance between electrodes is given by:
+      \begin{equation} C_s= \frac{2 K_{33}^T EON l}{Ln(OD/ID)} \end{equation}
+    </a>
+
+  </div>
+  <div class="wave_funct_solver dashedBorder">
+    <form id="form">
+      <input type="text" id="intD" value="0.2" />
+      <label for="intD">(ID) Internal Diameter [in]</label><br>
+      <input id="len" type="text" value="0.5" />
+      <label for="len"> (l) Length  [in]</label><br>
+      <input id="thick" type="text" value="0.025" />
+      <label for="thick">(t) Wall thickness [in]</label><br>
+      <input id="volt" type="text" value="1" />
+      <label for="volt">(V) Voltage</label><br>
+      <select id="piezoMaterial">
+    <option value="pzt5a">PZT-5A</option>
+    <option value="other">Other</option>
+  </select>
+      <label for="piezoMaterial">Material of Piezo Scanner</label><br>
+      <p><a>$d_{31}$=</a><a id="out_d31"></a></p>
+      <p><a>$d_{33}$=</a><a id="out_d33"></a></p>
+      <p><a>$d_{15}$=</a><a id="out_d15"></a></p>
+      <p><a>Axial Displacement:  $\Delta L_{axial}$=</a><strong><a id="out_axialD"></a></strong></p>
+      <p><a>Lateral Displacement:  $\Delta L_{lateral}$=</a><strong><a id="out_lateralD"></a></strong></p>
+      <p><a>$C_s$=</a><strong><a id="out_cap"></a></strong></p>
+    </form>
+
+    <script>
+      function piezoDisplacement() {
+        try {
+          const intD = document.getElementById('intD').value;
+          const len = document.getElementById('len').value;
+          const thick = document.getElementById('thick').value;
+          const volt = document.getElementById('volt').value;
+          const piezoMat = document.getElementById('piezoMaterial').value;
+          let d31 = 0; // [pm/V]
+          let d33 = 0; // [pm/V]
+          let d15 = 0; // [pm/V]
+          let kT33 = 0; // [pm/V]
+          switch (piezoMat) {
+            case 'pzt5a':
+              d31 = -171; // [pm/V]
+              d33 = 374; // [pm/V]
+              d15 = 585; // [pm/V]
+              kT33 = 1700; // [pm/V]
+              break;
+            default:
+              d31 = 0; // [pm/V]
+              d33 = 0; // [pm/V]
+              d15 = 0; // [pm/V]
+              kT33 = 0; // [pm/V]
+          }
+          let axialD = d31 * len * volt / thick;
+          let lateralD = 0.9 * d31 * len * len * volt / ((+intD + +thick) * thick);
+          let capacitance = 2 * kT33 * len * 0.00030669738 / math.log10((+intD + 2 * +thick) / intD); // (EON parameter manually set to 0.00030669738, need to confirm value)
+
+          document.getElementById("out_d31").innerHTML = d31 + '  pm/V';
+          document.getElementById("out_d33").innerHTML = d33 + '  pm/V';
+          document.getElementById("out_d15").innerHTML = d15 + '  pm/V';
+          document.getElementById("out_cap").innerHTML = capacitance + '  nF';
+          document.getElementById("out_axialD").innerHTML = (axialD / 1E3) + ' nm';
+          document.getElementById("out_lateralD").innerHTML = (lateralD / 1E3) + '  nm';
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+
+      document.getElementById('form').addEventListener("input", function() {
+        piezoDisplacement()
+      });
+      piezoDisplacement()
+    </script>
+  </div>
+</body>
+
+</html>
