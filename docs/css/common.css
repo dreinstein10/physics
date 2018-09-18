@@ -1,3 +1,8 @@
+.body {
+  width: 90%;
+  margin: auto;
+}
+
 .dashedBorder {
   border-width: 2px;
   border-style: dashed;
@@ -16,4 +21,18 @@
 .oneRowImg {
   max-width: 300px;
   max-height: 300px;
+}
+
+.mediumSizeImg {
+  max-width: 450px;
+  max-height: 450px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.blackBorder {
+  border-width: 1px;
+  border-style: solid;
+  padding: 1em;
 }

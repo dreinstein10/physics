@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Special Relativity</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+
+<body style="width:90%;margin: auto;">
+  <div style="text-align:center;">
+    <h1>Special Relativity</h1>
+    <h2><em>A collection of online tools</em></h2>
+  </div>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <hr>
+  <h3>Related Topics</h3>
+  <ul>
+    <li><a href="https://physics.scientar.com/index.html">Physics (Home)</a></li>
+    <li><a href="https://electromagnetism.scientar.com/index.html">Electrodynamics</a></li>
+  </ul>
+  <hr><br>
+  <div class="text">
+    <h4>Einstein's postulate of special realtivity</h4>
+    <a><strong>1st</strong> The laws of physics are the same in all inertial reference frames. <br>
+      *An inertial reference frame is in constant state of rectilinear motion in reference to another inertial reference frame (Not accelerating)
+    </a><br>
+    <a><strong>2nd</strong> Light propagates through space with velocity $c$ independent of the motion of the source.
+    </a><br><br>
+    <a>Newtonian Physics  -->  Galilean Transformations <br>  Special Relativity  -->  Lorentz Transformations
+    </a><br><br>
+    <a>Equations:
+      \begin{equation} \gamma = \frac{1}{\sqrt{1-v^2/c^2}} \end{equation}
+      \begin{equation} m=\gamma m_0 \end{equation}
+      \begin{equation} t=\gamma t_0 \end{equation}
+      \begin{equation} l= l_0 / \gamma \end{equation}
+      \begin{equation} v= c \sqrt{1-1/\gamma^2} \end{equation}
+    </a>
+  </div>
+  <!-- Wave function solver-->
+  <div class="wave_funct_solver dashedBorder">
+    <form id="form">
+      <!--
+      <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
+      <label for="eq">Equation</label><br>-->
+      <input type="text" id="m0_1" value="1" />
+      <label for="m0_1">$m_0$ Mass at rest </label><br>
+      <input type="text" id="t0_1" value="1" />
+      <label for="t0_1">$t_0$ Time at rest </label><br>
+      <input type="text" id="l0_1" value="1" />
+      <label for="l0_1">$l_0$ Length at rest </label><br><br>
+      <input type="text" id="u1" value="0.8" />
+      <label for="u1">$u$ Velocity of S' relative to S (Static reference frame) [c] </label><br><br>
+      <input id="vp1" type="text" value="0.6" />
+      <label for="vp1"> $v'$ Velocity of event as seen by observer at S' [c] </label><br>
+      <p><a>Gamma:  $\gamma$=</a><strong><a id="out_gamma1"></a></strong></p>
+      <p><a>Mass :  $m$=</a><strong><a id="out_m_1"></a></strong></p>
+      <p><a>Time:  $t$=</a><strong><a id="out_t_1"></a></strong></p>
+      <p><a>Length :  $l$=</a><strong><a id="out_l_1"></a></strong></p>
+      <p><a>Velocity of event as seen by observer at S :  $v$=</a><strong><a id="out_v1"></a></strong></p>
+    </form>
+
+    <div id="plot"></div>
+    <script>
+      function Transformation1() {
+        try {
+          const m0_1 = document.getElementById('m0_1').value;
+          const t0_1 = document.getElementById('t0_1').value;
+          const l0_1 = document.getElementById('l0_1').value;
+          const u1 = document.getElementById('u1').value;
+          const vp1 = document.getElementById('vp1').value;
+          let v1 = (+vp1 + +u1) / (+1 + +(vp1 * u1));
+          let gamma1 = 1 / (+1 + +(u1 * u1));
+          let m_1 = m0_1 * gamma1;
+          let t_1 = t0_1 * gamma1;
+          let l_1 = l0_1 / gamma1;
+
+          document.getElementById("out_v1").innerHTML = v1 + ' c';
+          document.getElementById("out_gamma1").innerHTML = gamma1 + '  ';
+          document.getElementById("out_m_1").innerHTML = m_1 + ' ';
+          document.getElementById("out_t_1").innerHTML = t_1 + ' ';
+          document.getElementById("out_l_1").innerHTML = l_1 + ' ';
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+
+      document.getElementById('form').addEventListener("input", function() {
+        Transformation1()
+      });
+      Transformation1()
+    </script>
+  </div>
+  <div class="text">
+    <h4>Lorentz Transformation Equations</h4>
+    <a>
+\begin{equation} x=ut+x'\sqrt{1-u^2/c^2} \ \ \ , \ \ \ x'=\frac{x-ut}{\sqrt{1-u^2/c^2}} \end{equation}
+\begin{equation} t=t'\sqrt{1-u^2/c^2} + ux/c^2 \ \ \ , \ \ \ t'=\frac{t-ux/c^2}{\sqrt{1-u^2/c^2}} \end{equation}
+\begin{equation} v= \frac{v'+u}{1+ \frac{v' u}{c^2}}  \ \ \ , \ \ \ v'=\frac{v-u}{1-vu/c^2} \end{equation}
+\begin{equation} u=\frac{v-v'}{1-vv'/c^2} \end{equation}
+</a><br>
+</div>
+    <div class="text">
+      <h4>Relativistic Doppler effect</h4>
+      <a>
+  \begin{equation} f=\sqrt{\frac{c+u}{c-u}} f_0 \end{equation}
+</a><br>
+</div>
+      <div class="text">
+        <h4>The relativistic triangle</h4>
+        <a alt="Picture taken from: https://upload.wikimedia.org/wikipedia/en/8/8d/Relativistic_Dynamics.png"><img src="https://upload.wikimedia.org/wikipedia/en/8/8d/Relativistic_Dynamics.png" class="mediumSizeImg blackBorder"/></a><br>
+        <a>
+          \begin{equation} E = m c^2 = \gamma m_0 c^2 \end{equation}
+    \begin{equation} E_0 = m_0 c^2 \end{equation}
+    \begin{equation} E = E_0 + KE \end{equation}
+    \begin{equation} E^2 = (m_0 c^2)^2 + (pc)^2 \end{equation}
+    \begin{equation} KE = (\gamma -1) m_0 c^2 \end{equation}
+    \begin{equation} p=m_0 c \sqrt{\gamma^2 -1} \end{equation}
+    \begin{equation} \cos \theta = \frac{1}{\gamma} \end{equation}
+    \begin{equation} \theta = \tan^{-1}(\frac{pc}{m_0 c^2}) \end{equation}
+  </a>
+        <a > Units: <br> E -> [MeV] <br> p-> [MeV/c]<br> </a>
+      </div>
+</body>
+
+</html>
