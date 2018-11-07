@@ -30,7 +30,7 @@
     <h2><em>A collection of online tools for STMing</em></h2>
   </div>
   <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
-  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <a><em> *(If you find any errors in the code, please let me know on Github)</em></a>
   <br>
   <a><img src="https://upload.wikimedia.org/wikipedia/commons/f/f9/ScanningTunnelingMicroscope_schematic.png" class="headerImg"/></a>
   <hr>
@@ -174,6 +174,218 @@
       \begin{equation} \psi_I(z) = e^{ik_1x}+re^{-ik_1x} \ \ ,\ \  k_1=\sqrt{\frac{2 m_e E}{\hbar^2}} \end{equation}
     </a>
   </div>
+
+  <div class="text">
+    <h4>Feedback Loop</h4>
+    <a>Using Ref. \cite{optimalConditionsForSTMTheory} we can describe the STM feedback loop as </a>
+    <a><img src="https://www.researchgate.net/profile/Ai_Oliva/publication/237239858/figure/fig1/AS:299466486763524@1448409782094/Typical-feedback-loop-diagram-used-in-a-STM.png" class="mediumSizeImg"/></a>
+    <br  />
+    <a>The parameter $\alpha$ is defined as:
+      \begin{equation} \alpha= 1.025 K_L log_{10}(e) \sqrt{\phi} \end{equation}
+      where $K_L$ is the conversion factor of the logarithmic amplifier (in fl_K1s), and $\phi$ the average barrier height (in eV).</a>
+    <a>The total gain of the closed loop can be defined as
+      \begin{equation} G_0=\alpha A \gamma_0 G_1 \end{equation}
+      where $\gamma_0$ is the voltage sensitivity constant.
+    </a>
+    <a>
+      We can define the following adimensional terms:
+        \begin{equation} G= G_0 G_2 \end{equation}
+        \begin{equation} K= \frac{G_0 K_1}{\omega_s} \end{equation}
+        \begin{equation} \tau_s= \omega_s \tau \end{equation}
+        \begin{equation} W_0= \frac{\omega_0}{\omega_s} \end{equation}
+    </a>
+    <a>
+      According to \cite{optimalConditionsForSTMTheory}, the stability condition is
+        \begin{equation} K< W_0^2 \tau_s(1-G) \end{equation}
+        the amplitude conditions are
+          \begin{equation} K \geq \sqrt{\frac{G^2-(1+\Delta)^2 (1-G)^2}{(1+\Delta)^2-1}} \ \ \ \mbox{for}\Delta>0 \end{equation}
+          \begin{equation} K \geq \sqrt{\frac{-G^2+(1+\Delta)^2 (1-G)^2}{(1+\Delta)^2-1}} \ \ \ \mbox{for}\Delta < 0 \end{equation}
+          the phase shift condition can be obtained from
+            \begin{equation} \tan{\phi_s}=\frac{K}{G(1-G)-K^2} \end{equation}
+            which means...
+              \begin{equation} K=\frac{-1}{2 \tan{\phi_s}} \pm  \sqrt{\frac{1}{4 \tan{\phi_s}^2}+G(1-G)}  \end{equation}
+    </a>
+    <br />
+    <a >The optimal area for imaging is shown in the following plot as a shadowed area, constrained by the combination of limits described above</a><br /><br />
+    <a><img src="https://www.researchgate.net/profile/Ai_Oliva/publication/237239858/figure/fig8/AS:299466486763538@1448409782423/a-STM-image-of-gold-thin-film-obtained-with-parameters-into-the-reliable-area-for_Q320.jpg" class="mediumSizeImg"/></a><br  />
+    <a >*The limits for the amplitude condition below are not the same as the ones shown in the plot above, still need to find why !</a>
+  </div>
+  <div class="feedbackLoopParameters dashedBorder">
+
+    <form id="form_fl">
+      <input type="text" id="fl_KL" value="1" />
+      <label for="fl_KL">($K_L$) Conversion Factor of Amplifier [V]</label><br>
+      <input id="fl_phi" type="text" value="4" />
+      <label for="fl_phi"> ($\phi$) Average barrier height  [eV]</label><br>
+      <input id="fl_G2" type="text" value="0.0015" />
+      <label for="fl_G2">($G_2$) Proportional Gain [a.u.]</label><br>
+      <input id="fl_K1" type="text" value="30" />
+      <label for="fl_K1">($K_1$) Integral Gain [1/s]</label><br>
+      <input id="fl_omega0" type="text" value="5000" />
+      <label for="fl_omega0">($\omega_0$) Resonance frequency of the piezoelectric (considering whole STM head) [Hz]</label><br>
+      <input id="fl_omegas" type="text" value="1000" />
+      <label for="fl_omegas">($\omega_s$) Sampling frequency [Hz] *Has to be smaller than $2\omega_c$</label><br>
+      <input id="fl_A" type="text" value="1" />
+      <label for="fl_A">($A$) Voltage Amplification [a.u.]</label><br>
+      <input id="fl_gamma0" type="text" value="300" />
+      <label for="fl_gamma0">($\gamma_0$) Voltage sensiticity constant [{\r{A}}Amstrongs/V]</label><br>
+      <input id="fl_G1" type="text" value="1" />
+      <label for="fl_G1">($G_1$) Comparison amplification [a.u.]</label><br>
+      <input id="fl_tau" type="text" value="50" />
+      <label for="fl_tau">($\tau$) Definition? [$\mu s$]</label><br>
+      <input id="fl_delta" type="text" value="0.5" />
+      <label for="fl_delta">($\Delta$) Definition? </label><br>
+      <input id="fl_phis" type="text" value="-60" />
+      <label for="fl_phis">($\phi_s$) Maximum phase shift [º] </label><br>
+      <hr>
+      <input id="fl_cutoff" type="text" value="1000" />
+      <label for="fl_cutoff">($\omega_c$) Cutoff frequency [Hz]</label><br>
+      <input id="fl_omega" type="text" value="1000" />
+      <label for="fl_omega">($\omega$) Frequency [Hz]</label><br>
+      </form>
+      <div id="fl_plot"></div>
+      <p><a>$\alpha$=</a><a id="out_fl_alpha"></a></p>
+      <p><a>$\beta (\omega)$=</a><a id="out_fl_beta"></a></p>
+      <p><a>$G_0$=</a><a id="out_fl_G0"></a></p>
+      <p><a>$G$=</a><a id="out_fl_G"></a></p>
+      <p><a>$K$=</a><a id="out_fl_K"></a></p>
+      <p><a>$w_0$=</a><a id="out_fl_omega0"></a></p>
+      <p><a>$w_s$=</a><a id="out_fl_omegas"></a></p>
+      <p><a>$tau_s$=</a><a id="out_fl_taus"></a></p>
+      <p><a>$W_0$=</a><a id="out_fl_W0"></a></p>
+
+      <script>
+        function feedbackLoopParameters() {
+          try {
+            const fl_KL = document.getElementById('fl_KL').value;
+            const fl_phi = document.getElementById('fl_phi').value;
+            const fl_G2 = document.getElementById('fl_G2').value;
+            const fl_K1 = document.getElementById('fl_K1').value;
+            const fl_cutoff = document.getElementById('fl_cutoff').value * 2 * pi;
+            const fl_omega = document.getElementById('fl_omega').value * 2 * pi;
+            const fl_omega0 = document.getElementById('fl_omega0').value * 2 * pi;
+            const fl_omegas = document.getElementById('fl_omegas').value * 2 * pi;
+            const fl_A = document.getElementById('fl_A').value;
+            const fl_gamma0 = document.getElementById('fl_gamma0').value;
+            const fl_G1 = document.getElementById('fl_G1').value;
+            const fl_tau = document.getElementById('fl_tau').value / 1E6;
+            const fl_delta = document.getElementById('fl_delta').value;
+            const fl_phis = document.getElementById('fl_phis').value;
+
+            let fl_alpha = 0.445 * fl_KL * math.sqrt(fl_phi);
+            let fl_beta = math.multiply(math.add(math.divide(fl_K1, math.multiply(fl_omega, math.complex(0, 1))), -fl_G2), math.divide(fl_cutoff, math.add(fl_cutoff, math.multiply(fl_omega, math.complex(0, 1)))));
+            let fl_G0 = fl_alpha * fl_A * fl_gamma0 * fl_G1;
+            let fl_G = fl_G0 * fl_G2;
+            let fl_K = fl_G0 * fl_K1 / fl_omegas;
+            let fl_taus = fl_omegas * fl_tau;
+            let fl_W0 = fl_omega0 / fl_omegas;
+            let fl_tanphis = math.tan(fl_phis * pi / 180);
+
+            document.getElementById("out_fl_alpha").innerHTML = ' ' + fl_alpha + '  V/Angstroms';
+            document.getElementById("out_fl_beta").innerHTML = ' ' + fl_beta;
+            document.getElementById("out_fl_G0").innerHTML = ' ' + fl_G0;
+            document.getElementById("out_fl_K").innerHTML = ' ' + fl_K;
+            document.getElementById("out_fl_taus").innerHTML = ' ' + fl_taus + ' s';
+            document.getElementById("out_fl_W0").innerHTML = ' ' + fl_W0;
+            document.getElementById("out_fl_G").innerHTML = ' ' + fl_G;
+            document.getElementById("out_fl_omega0").innerHTML = ' ' + fl_omega0 + ' rad/s';
+            document.getElementById("out_fl_omegas").innerHTML = ' ' + fl_omegas + ' rad/s';
+
+
+            let xValues = math.range(0, 1.001, 0.001).toArray()
+            let stabilityLimit = math.multiply(fl_W0, fl_W0, fl_taus, math.subtract(1, xValues))
+            let stabilityTwilightLimit = math.multiply(0.5, fl_W0, fl_W0, fl_taus, math.add(1, math.multiply(-1, xValues)))
+            let amplitudeLimit1 = xValues.map(G => math.re(math.sqrt((G * G - math.pow(1 + +fl_delta, 2) * math.pow(1 - G, 2)) / (math.pow(1 + +fl_delta, 2) - 1))))
+            let fl_deltam = fl_delta * 1;
+            let amplitudeLimit2 = xValues.map(G => math.re(math.sqrt((math.pow(1 + +fl_deltam, 2) * math.pow(1 - G, 2) - G * G) / (math.pow(1 + +fl_deltam, 2) - 1))))
+            //let phaseShiftLimit = xValues.map(G => math.sqrt(G * math.subtract(1, G)))
+            let phaseShiftLimit = xValues.map(G => -1 / (2 * fl_tanphis) + +math.sqrt(1 / (4 * fl_tanphis * fl_tanphis) + +(G * math.subtract(1, G))))
+            //console.log("Here" + amplitudeLimit1)
+            const phaseShiftFunct = {
+              x: xValues,
+              y: phaseShiftLimit,
+              type: 'scatter',
+              name: 'PhaseShiftLimit'
+            }
+            const amplitudeFunct1 = {
+              x: xValues,
+              y: amplitudeLimit1,
+              type: 'scatter',
+              name: 'Amplitude Limit Delta>0'
+            }
+            const amplitudeFunct2 = {
+              x: xValues,
+              y: amplitudeLimit2,
+              type: 'scatter',
+              name: 'Amplitude Limit Delta<0'
+            }
+            const stabilityFunct = {
+              x: xValues,
+              y: stabilityLimit,
+              type: 'scatter',
+              name: 'Stability Condition Limit',
+              mode: 'lines',
+            }
+            const stabilityTwilightFunct = {
+              x: xValues,
+              y: stabilityTwilightLimit,
+              type: 'scatter',
+              name: 'Stability Twilight Limit',
+              mode: 'lines',
+              line: {
+                dash: 'dot'
+              }
+            }
+            const singlePointA = {
+              x: [fl_G],
+              y: [fl_K],
+              type: 'scatter',
+              name: 'Point A'
+            }
+            var layout = {
+              //title: 'Free electron & potential barrier',
+              xaxis: {
+                title: 'G = G_0 G_2',
+                range: [0, 1]
+              },
+              yaxis: {
+                title: 'K = G_0 F_1 / w_s',
+                range: [0, 2]
+
+              }
+            };
+
+            const data = [stabilityFunct, stabilityTwilightFunct, phaseShiftFunct, amplitudeFunct1, amplitudeFunct2, singlePointA]
+            Plotly.newPlot('fl_plot', data, layout)
+
+          } catch (err) {
+            console.error(err)
+            alert(err)
+          }
+        }
+
+        document.getElementById('form_fl').addEventListener("input", function() {
+          feedbackLoopParameters()
+        });
+        feedbackLoopParameters()
+      </script>
+
+  </div>
+
+  <div class="text">
+    <a>The parameter $\beta$ is given by
+      \begin{equation} \beta(\omega)= \left( \frac{K_1}{i \omega} - G_2 \right) \left[ \frac{\omega_c}{\omega_c + i \omega}  \right] \end{equation}
+      where $K_1$ is the integration constant, $\omega_c$ is the cutoff frequency (rad/s) of the low pass filter, and $G_2$ is the gain of the amplifier.
+    </a>
+    <a>For the piezoelectric element that controls the vertical tip position in the STM case can be modeled by
+      \begin{equation} \gamma(\omega)=\gamma_0 R(\omega) \end{equation}
+      where $R(\omega)$ is the frequency dependent part of the piezoelectric element and $\gamma_0$ the voltage sensitivity constant ($\AA /V$). And $R(\omega)$ considering two poles for instabilities can be described as
+      \begin{equation} R(\omega)=\frac{1}{1+i \omega \tau - (\omega^2 /\omega_0^2)} \end{equation}
+      where $\omega_0$ is the resonant frequency of the piezoelectric.
+    </a>
+  </div>
+
+
 </body>
 
 </html>

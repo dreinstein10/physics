@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Identities and Formulas Sheet</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+
+<body style="width:90%;margin: auto;">
+  <div style="text-align:center;">
+    <h1>Identities and Formulas Sheet</h1>
+    <h2><em>A collection of online tools</em></h2>
+  </div>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <hr>
+  <div class="text">
+    <h4>Geometry</h4>
+    <a>
+      Arc Length
+        \begin{equation} s=\int_a^b \sqrt{1+f'(x)^2} dx    \end{equation}
+        \begin{equation} s=\int_a^b \sqrt{\rho^2+(\frac{d\rho}{d\theta} )^2} d\theta \ \ \ \ \ \ (Polar\ coordinates)   \end{equation}
+    </a>
+  </div>
+  <div class="text">
+    <h4>Formulas</h4>
+
+    <a>
+      The mean of a function over an interval T is given by
+        \begin{equation} \langle f(t) \rangle = \frac{1}{T} \int_0^{T} f(t) dt      \end{equation}
+      The Taylor Series is given by
+        \begin{equation} f(x)= \sum_0^\infty \frac{f^{(n)} (x_0)}{n !} (x-x_0)^n)      \end{equation}
+      If $x_o=0$, then (Maclaurin series)
+        \begin{equation} f(x)= \sum_0^\infty \frac{f^{(n)} (0)}{n !} x^n)      \end{equation}
+    </a>
+  </div>
+
+  <div class="text">
+    <h4>Trigonometric Identities</h4>
+    <a>
+        \begin{equation} \sin{x}^2 + \cos{x}^2 = 1   \end{equation}
+        \begin{equation} \sin(x \pm y)  = \sin{x}\cos{y} \pm \sin{y}\cos{x}   \end{equation}
+        \begin{equation} \cos(x \pm y)  = \cos{x}\cos{y} \pm \sin{x}\sin{y}   \end{equation}
+
+
+        \begin{equation} e^{\pm i \theta} =\cos(\theta) \pm i \sin(\theta)  \end{equation}
+    </a>
+  </div>
+
+  <div class="text">
+    <h4>Vector Calculus Identities</h4>
+    <a>
+        \begin{equation} \vec{A} \cdot \vec{B} \times \vec{C} = \vec{A} \times \vec{B} \cdot \vec{C} \end{equation}
+        \begin{equation} \vec{A} \times( \vec{B} \times \vec{C}) = \vec{B}( \vec{A} \cdot \vec{C}) - \vec{C}( \vec{A} \cdot \vec{B}) \end{equation}
+
+        \begin{equation} \vec{\nabla} \times \vec{\nabla} \Phi =0 \end{equation}
+        \begin{equation} \vec{\nabla} \cdot \vec{\nabla} \times \vec{V} =0 \end{equation}
+    </a>
+  </div>
+
+  <div class="text">
+    <h4>Optics</h4>
+    <a>
+      Velocity $v$
+        \begin{equation} v=\frac{\omega}{k}=\frac{c}{n}    \end{equation}
+      Frequency $\nu$
+        \begin{equation} \nu=\frac{\omega}{2 \pi}=\frac{1}{T}=\frac{v}{\lambda}     \end{equation}
+      Wavelength $\lambda$
+        \begin{equation} \lambda=v \frac{2 \pi}{\omega}=v T     \end{equation}
+        \begin{equation} \lambda_0=c T=n \lambda     \end{equation}
+      Wavenumber $k$
+        \begin{equation} k=\frac{2 \pi}{\lambda}=\frac{n \omega}{c}=\frac{\omega}{v}   \end{equation}
+        \begin{equation} k_0=\frac{k}{n}=\frac{2 \pi}{\lambda_0}=\frac{\omega}{c}   \end{equation}
+        <!--\begin{equation} k=\frac{1}{\lambda_0}=\frac{\nu}{c}   \end{equation}-->
+    </a>
+  </div>
+
+  <div class="text">
+    <h4>SI Base Units</h4>
+    <table>
+      <tr><td>Amount of substance </td><td>(mole)</td><td> $Mol$ </td></tr>
+      <tr><td>Electric current </td><td>(ampere)</td><td> $A$ </td></tr>
+      <tr><td>Length </td><td>(meter)</td><td> $m$ </td></tr>
+      <tr><td>Luminous intensity </td><td>(candela)</td><td> $Cd$ </td></tr>
+      <tr><td>Mass </td><td>(kilogram)</td><td> $kg$ </td></tr>
+      <tr><td>Time </td><td>(second)</td><td> $s$ </td></tr>
+      <tr><td>Temperature </td><td>(Kelvin)</td><td> $K$ </td></tr>
+    </table>
+    <h4>SI Derived Units</h4>
+    <table>
+      <tr><td>Frequency </td><td>(Hertz)</td><td> $Hz=\frac{1}{s}$ </td></tr>
+      <tr><td>Force </td><td>(Newton)</td><td> $N=\frac{m\cdot kg}{s^2}$ </td></tr>
+      <tr><td>Pressure,stress </td><td>(Pascal)</td><td> $Pa=\frac{N}{m^2} =\frac{J}{m^3}=\frac{kg}{m\cdot s^2}$ </td></tr>
+      <tr><td>Energy,Work,quantity of heat </td><td>(Joule)</td><td> $J=N\cdot m= Pa\cdot m^3=W\cdot s=C\cdot V=\frac{kg \cdot m^2}{s^2}$ </td></tr>
+      <tr><td>Power </td><td>(Watt)</td><td> $W=\frac{J}{s}=\frac{N\cdot m}{s} = V\cdot A =\frac{V^2}{\Omega}=\frac{kg \cdot m^2}{s^3}$ </td></tr>
+      <tr><td>Electric charge </td><td>(Coulomb)</td><td> $C=A\cdot s=F\cdot V$ </td></tr>
+      <tr><td>Electric potential difference </td><td>(Volt)</td><td> $V=\frac{W}{A}=\frac{J}{C}=A\cdot \Omega =\frac{eV}{e}=\frac{kg \cdot m^2}{A\cdot s^3}$ </td></tr>
+      <tr><td>Electric resistance </td><td>(Ohm)</td><td> $\Omega=\frac{V}{A}=\frac{W}{A^2}=\frac{V^2}{W}=\frac{s}{F}=\frac{J\cdot s}{C^2}=\frac{J}{s\cdot A^2}=\frac{kg\cdot m^2}{s\cdot C^2} =\frac{kg \cdot m^2}{A^2 \cdot s^3}$ </td></tr>
+      <tr><td>Electric capacitance </td><td>(Farads)</td><td> $F=\frac{C}{V}=\frac{A\cdot s}{V}=\frac{J}{V^2}=\frac{W\cdot s}{V^2}=\frac{N\cdot m}{V^2}=\frac{C^2}{J}=\frac{C^2}{N\cdot m}=\frac{s}{\Omega}=\frac{1}{\Omega \cdot Hz}=\frac{s^2}{H}=\frac{A^2\cdot
+        s^4}{kg\cdot m^2}=\frac{C^2\cdot s^2}{kg\cdot m^2}$ </td></tr>
+      <tr><td>Electrical Inductance </td><td>(Henry)</td><td> $H=\frac{kg\cdot m^2}{s^2 \cdot A^2}$ </td></tr>
+      <tr><td>Magnetic Flux </td><td>(Weber)</td><td> $Wb=\frac{kg\cdot m^2}{s^2 \cdot A}$ </td></tr>
+      <tr><td>Magnetic Flux density </td><td>(Tesla)</td><td> $T=\frac{Wb}{m^2}=\frac{kg}{s^2 \cdot A}$ </td></tr>
+    </table>
+
+  </div>
+  <!--  Add constants units such as free-space permitivity, etc -->
+</body>
+
+</html>
