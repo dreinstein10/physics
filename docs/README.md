@@ -16,9 +16,6 @@ The list of topics up to now is this:
 
 
 
-
-
-
 1. Numbered
 2. List
 

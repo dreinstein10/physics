@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Optical Properties of Solids</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+
+<body style="width:90%;margin: auto;">
+  <div style="text-align:center;">
+    <h1>Optical Properties of Solids</h1>
+    <h2><em>A collection of online tools</em></h2>
+  </div>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <ul>
+    <li> Optical Properties of Solids – by Mark Fox </li>
+  </ul>
+  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <hr>
+  <h3>Related Topics</h3>
+  <ul>
+    <li><a href="electromagnetism.scientar.com/index.html">Electrodynamics</a></li>
+  </ul>
+  <hr><br>
+  <div class="text">
+    <h4>Optical Coefficients</h4>
+    <a>
+      The refractive index
+      \begin{equation} n= \frac{c}{v} \end{equation}
+      Beer's Law
+      \begin{equation} I(z)=I_0 e^{-\alpha z} \end{equation}
+      Optical Density
+      \begin{equation} O.D.=-\log_{10}\left(\frac{I(l)}{I_0}\right) = \frac{\alpha l}{\log_e(10)} \end{equation}
+      The complex refractive index
+      \begin{equation} \tilde{n}= n+i\kappa \end{equation}
+      Wave vector expression
+      \begin{equation} k=\tilde{n}\frac{w}{c}=(n+i\kappa)\frac{w}{c} \end{equation}
+      Absorption coefficient
+      \begin{equation} \alpha=\frac{2\kappa \omega}{c}=\frac{4 \pi \kappa }{\lambda} \end{equation}
+      Reflectivity
+      \begin{equation} R=\left| \frac{\tilde{n}-1}{\tilde{n}+1}\right|^2= \frac{(n-1)^2+\kappa^2}{(n+1)^2+\kappa^2} \end{equation}
+      Transmisivity (Incoherent light)
+      \begin{equation} T=\frac{(1-R_1)(1-R_2)e^{-\alpha l}}{1-R_1 R_2 e^{-2\alpha l}} \end{equation}
+      Transmisivity (Coherent light)
+      \begin{equation} T=\frac{(1-R)^2 e^{-\alpha l}}{1-R^2 e^{-2\alpha l}} \end{equation}
+      Complex relative dielectric constant
+      \begin{equation} \tilde{\epsilon_r}=\epsilon_1 + i \epsilon_2 \end{equation}
+      \begin{equation} \tilde{n}^2=\tilde{\epsilon_r} \end{equation}
+      \begin{equation} \epsilon_1=n^2-\kappa^2 \end{equation}
+      \begin{equation} \epsilon_2=2 n \kappa \end{equation}
+      \begin{equation} n=\frac{1}{\sqrt{2}}\left( \epsilon_1 +(\epsilon_1^2 + \epsilon_2^2)^{1/2} \right)^{1/2} \end{equation}
+      \begin{equation} \kappa=\frac{1}{\sqrt{2}}\left( -\epsilon_1 +(\epsilon_1^2 + \epsilon_2^2)^{1/2} \right)^{1/2} \end{equation}
+
+    </a>
+
+  </div>
+  <!-- Wave function solver-->
+  <div class="dashedBorder">
+    <form id="form">
+      <!--
+      <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
+      <label for="eq">Equation</label><br>-->
+      <input type="text" id="nReal" value="4.141" />
+      <label for="nReal">$n$ Real part of $\tilde{n}$ </label><br>
+      <input id="kappaImag" type="text" value="2.215" />
+      <label for="kappaImag"> $\kappa$ Imaginary part of $\tilde{n}$</label><br>
+      <input id="lambda1" type="text" value="400E-9" />
+      <label for="lambda1">$\lambda$ Wavelength [m]</label><br>
+      <input id="length1" type="text" value="10E-6" />
+      <label for="length1">l [m]</label><br>
+      <input id="eps1" type="text" value="2.215" />
+      <label for="eps1"> $\epsilon_1$ </label><br>
+      <input id="eps2" type="text" value="400E-9" />
+      <label for="eps2">$\epsilon_1$ </label><br>
+      <p>$v=$<strong><a id="phaseVelocity"></a></strong> m/s</p>
+      <p>$\alpha=$<strong><a id="absorptionCoeff"></a></strong> $m^{-1}$</p>
+      <p>$R=$<strong><a id="reflectancia1"></a></strong></p>
+      <p>$T=$<strong><a id="trnsmisivity1"></a></strong></p>
+      <p>$\epsilon_1=$<strong><a id="dielectricConstantReal"></a></strong></p>
+      <p>$\epsilon_2=$<strong><a id="dielectricConstantImag"></a></strong></p>
+      <p>$n=$<strong><a id="nRealOutput"></a></strong></p>
+      <p>$\kappa=$<strong><a id="kappaImagOutput"></a></strong></p>
+    </form>
+
+    <div id="plot"></div>
+    <script>
+      function refractiveIndexCalc() {
+        try {
+          const nReal = document.getElementById('nReal').value;
+          const kappaImag = document.getElementById('kappaImag').value;
+          const lambda1 = document.getElementById('lambda1').value;
+          const length1 = document.getElementById('length1').value;
+          const eps1 = document.getElementById('eps1').value;
+          const eps2 = document.getElementById('eps2').value;
+          let phaseVelocity = 3E8 / nReal;
+          let absorptionCoeff = 4 * Math.PI * kappaImag / lambda1;
+          let reflectancia1 = (+Math.pow(nReal - 1, 2) + +Math.pow(kappaImag, 2)) / (+Math.pow(+nReal + +1, 2) + +Math.pow(kappaImag, 2));
+          let trnsmisivity1 = (Math.pow(+1 - +reflectancia1, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectancia1 * reflectancia1 * Math.exp(-2 * absorptionCoeff * length1));
+          let dielectricConstantReal = (+Math.pow(nReal - 1, 2) - +Math.pow(kappaImag, 2));
+          let dielectricConstantImag = 2 * nReal * kappaImag;
+          let nRealOutput = (1 / Math.sqrt(2)) * Math.sqrt(+eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
+          let kappaImagOutput = (1 / Math.sqrt(2)) * Math.sqrt(-eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
+          //trnsmisivity1 = Math.exp(1);
+          document.getElementById("phaseVelocity").innerHTML = phaseVelocity;
+          document.getElementById("absorptionCoeff").innerHTML = absorptionCoeff;
+          document.getElementById("reflectancia1").innerHTML = reflectancia1;
+          document.getElementById("trnsmisivity1").innerHTML = trnsmisivity1;
+          document.getElementById("dielectricConstantReal").innerHTML = dielectricConstantReal;
+          document.getElementById("dielectricConstantImag").innerHTML = dielectricConstantImag;
+          document.getElementById("nRealOutput").innerHTML = nRealOutput;
+          document.getElementById("kappaImagOutput").innerHTML = kappaImagOutput;
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+      document.getElementById('form').addEventListener("input", function() {
+        refractiveIndexCalc()
+      });
+      refractiveIndexCalc()
+    </script>
+  </div>
+
+</body>
+
+</html>

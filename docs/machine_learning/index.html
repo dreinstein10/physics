@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Machine Learning</title>
+  <meta charset="utf-8">
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+
+<body style="width:90%;margin: auto;">
+  <div style="text-align:center;">
+    <h1>Machine Learning (ML)</h1>
+    <h2><em>A collection of online tools</em></h2>
+  </div>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <ul>
+    <li> Coursera – by Andrew Ng </li>
+  </ul>
+  <a><em> *(There could be errors in the code, so please double check your results)</em></a>
+  <hr>
+  <h3>Related Topics</h3>
+  <ul>
+    <li><a href="formula_sheet.scientar.com/index.html">Formula Sheet</a></li>
+  </ul>
+  <hr><br>
+  <div class="text">
+    <h3>Linear Regression</h3>
+    <h4>$\circ$ Gradient Descent</h4>
+    <a>
+      Feature Scaling
+      \begin{equation} X_i := \frac{X_i - \mu_i}{S_i} \ \text{ where $\mu$=average and $S=$range(max-min) or standard deviation}\end{equation}
+      Hypothesis
+      \begin{equation} h_\theta(x) = \theta^T x = \theta_0 + \theta_1 x_1 + ... +\theta_n x_n \end{equation}
+      Cost Function
+      \begin{equation} J(\theta) = \frac{1}{2m} \sum_{i=1}^m \left(h_\theta (x^{(i)})-y{(i)}\right)^2 \end{equation}
+      Gradient Descent
+      \begin{equation} \theta_j := \theta_j - \alpha \frac{\partial}{\partial \theta_j} J(\theta) = \theta_j - \alpha \frac{1}{m} \sum_{i=1}^m \left(h_\theta(x^{(i)}) -y^{(i)}\right)x^{(i)}_j \end{equation}
+      In the multivariate case, the cost function can also be written in the following vectorized from:
+      \begin{equation} J(\theta) = \frac{1}{2m} (X \theta - \vec{y})^T (X \theta -\vec{y}) \end{equation}
+    </a>
+    <h4>$\circ$ Normal Equations</h4>
+    \begin{equation} \theta = (X^T X)^{-1} X^T \vec{y} \end{equation}
+    Recommended to use when $n
+    < (\sim 10^4)$ and inverse $(X^T X)^{-1}$ is not singular. No scaling needed for X.<br />
+    <h3>Classification</h3>
+    <h4>$\circ$ Logistic Regression</h4>
+    <a>
+      Sigmoid/Logistic function
+      \begin{equation}  g(z) = \frac{1}{1+e^{-z}} \end{equation}
+      Hypothesis
+      \begin{equation} h_\theta(x) = \frac{1}{1+e^{-\theta^Tx}} \end{equation}
+      Probability that y=1, given x, parameterized by $\theta$
+      \begin{equation} h_\theta(x) = P(y=1| x;\theta) \end{equation}
+
+      Decision Boundary is defined as $h_\theta(x) =0.5$
+      $h_\theta(x) =1$ when $ \theta^T x > 0$
+<br />
+      Cost Function (used to get a convex function for $J(\theta)$)
+\begin{equation}
+Cost(h_\theta(x),y)
+\begin{cases}
+    -log(h_\theta(x)),& \text{if } y=1\\
+    -log(1-h_\theta(x)),              & \text{if } y=0
+\end{cases}
+\end{equation}
+or
+\begin{equation} Cost(h_\theta(x),y)  -y \log(h_\theta(x)) -(1-y)\log(1-h_\theta(x)) \end{equation}
+
+Therefore,
+
+\begin{equation} J(\theta)= -\frac{1}{m} \left[ \sum_{i=1}^m y^{(i)} \log(h_\theta(x^{(i)})) +(1-y^{(i)})\log(1-h_\theta(x^{(i)})) \right] \end{equation}
+Gradient Descent
+\begin{equation} \theta_j := \theta_j - \alpha \frac{\partial}{\partial \theta_j} J(\theta) = \theta_j - \alpha \sum_{i=1}^m (h_\theta(x^{(i)}) -y^{(i)})x^{(i)}_j \end{equation}
+    </a>
+    <a>
+      Other Topic here
+    </a>
+  </div>
+
+</body>
+
+</html>

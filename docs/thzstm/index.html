@@ -4,12 +4,154 @@
 <head>
   <meta charset="utf-8">
   <title>THz-STM</title>
- {% include header.html %}
- {% seo %}
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
 </head>
 
 <body>
-  <h1>THz-STM</h1> A technique pioneered by Prof. Frank Hegmann at University of Alberta.
+  <h1>THz-STM</h1>
+  <h3>A technique pioneered by Prof. Frank Hegmann at University of Alberta.</h3>
+
+  <hr />
+  <div>
+    <a>Scan Speed Calculator for THz scanning</a><br><br>
+    <form id="scanSpeedCalc">
+      <input type="text" id="lockinTimeConstant" value="10" />
+      <label for="lockinTimeConstant"> Lock-in time constant [ms]</label><br>
+      <input id="timeConstantMultiplier" type="text" value="2" />
+      <label for="timeConstantMultiplier"> Time Constant Multiplier</label><br>
+      <input id="scanWindowSize" type="text" value="50" />
+      <label for="scanWindowSize"> Scan window size [nm]</label><br>
+      <input id="pixelsPerLine" type="text" value="128" />
+      <label for="pixelsPerLine"> Pixels per line</label><br>
+      <p><a id="scanSpeedEq"> </a></p>
+      <p><a>Scan Speed: </a><strong><a id="scanSpeed"></a></strong></p>
+    </form>
+    <script>
+      function scanSpeedCalc() {
+      try {
+        const lockinTimeConstant = document.getElementById('lockinTimeConstant').value;
+        const timeConstantMultiplier = document.getElementById('timeConstantMultiplier').value;
+        const scanWindowSize = document.getElementById('scanWindowSize').value;
+        const pixelsPerLine = document.getElementById('pixelsPerLine').value;
+        let scanSpeed = scanWindowSize * 1000 / (pixelsPerLine * timeConstantMultiplier * lockinTimeConstant); // [pm/V]
+        document.getElementById("scanSpeed").innerHTML = scanSpeed + '  nm/s';
+        document.getElementById("scanSpeedEq").innerHTML = '('+scanWindowSize+'nm/1 line)(1 line/'+pixelsPerLine+' pixels)(1 pixel/(('+timeConstantMultiplier+')('+lockinTimeConstant+' ms)))(1000 ms/1 s)=' +scanSpeed+ '  nm/s';
+
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('scanSpeedCalc').addEventListener("input", function() {
+      scanSpeedCalc()
+    });
+    scanSpeedCalc()
+  </script>
+  </div>
+  <hr />
+  <a>Pulse Energy Calculator</a><br><br>
+  <form id="pulseEnergyCalc">
+    <input type="text" id="thzBeampower" value="27E-6" />
+    <label for="thzBeampower"> THz beam power [W]</label><br>
+    <input id="laserRepRate" type="text" value="250E3" />
+    <label for="laserRepRate"> Laser repetition rate[Hz]</label><br>
+    <p><a>Energy per Pulse: </a><strong><a id="energyPerPulse"></a></strong></p>
+  </form>
+  <script>
+    function pulseEnergyCalc() {
+      try {
+        const thzBeampower = document.getElementById('thzBeampower').value;
+        const laserRepRate = document.getElementById('laserRepRate').value;
+        let energyPerPulse = thzBeampower / laserRepRate; // [pm/V]
+        document.getElementById("energyPerPulse").innerHTML = energyPerPulse + '  J';
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('pulseEnergyCalc').addEventListener("input", function() {
+      pulseEnergyCalc()
+    });
+    pulseEnergyCalc()
+  </script>
+  <hr />
+  <a>Lock-in Voltage Output Calibration
+    \begin{equation} I_{THz,avg}=(e f_{rep})\times N_e^{-}=g\ s\ K_{5077}\frac{V_{out}}{10 V} \end{equation}
+    \begin{equation} N_e^{-}=K_{5077}\times s \times 2596 [e^- /V^2] \times V_{out} \end{equation}
+  </a>
+  <form id="lockInCalibration">
+    <input type="text" id="lockInVout" value="0" />
+    <label for="lockInVout"> Lock-In Voltage Out</label><br>
+    <input type="text" id="lockInSensitivity" value="50" />
+    <label for="lockInSensitivity"> Lock-In Sensitivity [mV/nA]</label><br>
+    <input id="laserRepRate2" type="text" value="250E3" />
+    <label for="laserRepRate2"> Laser repetition rate [Hz]</label><br>
+    <select id="ivp">
+      <option value="ivp100">100</option>
+      <option value="ivp200">200</option>
+      <option value="ivp300" selected="selected">300</option>
+    </select>
+    <label for="ivp">IVP</label>
+    <p><a>$g=$</a><a id="gainFirstAmplifier"></a></p>
+    <p><a>$K_{5077}=$ </a><a id="k5077"></a></p>
+    <p><a> $I_{THz,avg}=$</a><strong><a id="iTHzCalibration"></a></strong></p>
+    <p><a> $N_e^{-}=$</a><strong><a id="calibrationFactorNe"></a></strong></p>
+  </form>
+  <script>
+    function lockInCalibration() {
+      try {
+        const lockInSensitivity = document.getElementById('lockInSensitivity').value;
+        const lockInVout = document.getElementById('lockInVout').value;
+        const laserRepRate2 = document.getElementById('laserRepRate2').value;
+        const ivp = document.getElementById('ivp').value;
+        let gainFirstAmplifier = 0;
+        let k5077 = 0;
+        switch (ivp) {
+          case 'ivp100':
+            gainFirstAmplifier = 0;
+            k5077 = 0;
+            break;
+          case 'ivp200':
+            gainFirstAmplifier = 0;
+            k5077 = 0;
+            break;
+          case 'ivp300':
+            gainFirstAmplifier = 1.04;
+            k5077 = 1.7;
+            break;
+          default:
+
+        }
+
+        let iTHzCalibration = gainFirstAmplifier * lockInSensitivity * k5077 * lockInVout / 10; // [pm/V]
+        let calibrationFactorNe = k5077 * lockInSensitivity * 2596 * lockInVout;
+        document.getElementById("k5077").innerHTML = k5077;
+        document.getElementById("gainFirstAmplifier").innerHTML = gainFirstAmplifier + '  nA/V';
+        document.getElementById("iTHzCalibration").innerHTML = iTHzCalibration + '  nA';
+        document.getElementById("calibrationFactorNe").innerHTML = calibrationFactorNe;
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('lockInCalibration').addEventListener("input", function() {
+      lockInCalibration()
+    });
+    lockInCalibration()
+  </script>
+  <hr />
 </body>
 
 </html>

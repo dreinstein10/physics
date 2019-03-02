@@ -90,6 +90,7 @@
           let axialD = d31 * len * volt / thick;
           let lateralD = 0.9 * d31 * len * len * volt / ((+intD + +thick) * thick);
           let capacitance = 2 * kT33 * len * 0.00030669738 / math.log10((+intD + 2 * +thick) / intD); // (EON parameter manually set to 0.00030669738, need to confirm value)
+          // Alternative formula for capacitance at   https://www.ceramtec.com/standard-shapes-and-sizes/tubes/
 
           document.getElementById("out_d31").innerHTML = d31 + '  pm/V';
           document.getElementById("out_d33").innerHTML = d33 + '  pm/V';
@@ -108,6 +109,16 @@
       });
       piezoDisplacement()
     </script>
+  </div>
+  <div class="text">
+    <h4>Useful resources</h4>
+    <a>
+      <ul>
+        <li>http://www.riken.jp/epmrt/Hanaguri/Tech.html</li>
+        <li>https://www.americanpiezo.com/knowledge-center/piezo-theory/determining-resonance-frequency.html</li>
+      </ul>
+    </a>
+
   </div>
 </body>
 
