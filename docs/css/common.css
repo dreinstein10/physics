@@ -36,3 +36,31 @@ body {
   border-style: solid;
   padding: 1em;
 }
+
+/* To create 2-columns*/
+.twoColumns {
+  float: left;
+  width: 50%;
+}
+
+/* Clear floats after the columns */
+.twoColumnsRow:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* To create 2-column table for plots with fixed width */
+.grid-container {
+  display: grid;
+  grid-template-columns: 700px 700px;
+  text-align: center;
+}
+
+/* To create 2-column table for plots */
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  font-size: 30px;
+  text-align: center;
+}

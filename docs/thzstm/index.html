@@ -14,8 +14,12 @@
   <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
   <!-- MathJax to write equations in html-->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Everpolate Library -->
+  <script src="../js/everpolate.browserified.min.js"></script>
   <!-- Imports Physical Constants -->
   <script src='../js/physicalConstants.js'></script>
+  <!-- Imports Everpolate for Inter/Extra-polations -->
+  <script src="./js/everpolate.browserified.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../css/common.css" />
 </head>
 
@@ -23,9 +27,15 @@
   <h1>THz-STM</h1>
   <h3>A technique pioneered by Prof. Frank Hegmann at University of Alberta.</h3>
 
-  <hr />
+  <hr>
+  <h3>Related Topics</h3>
+  <ul>
+    <li><a href="https://physics.scientar.com/stm/">STM</a></li>
+    <li><a href="https://physics.scientar.com/piezoscanner/">Piezo Scanner</a></li>
+  </ul>
+  <hr>
   <div>
-    <a>Scan Speed Calculator for THz scanning</a><br><br>
+    <h4>Scan Speed Calculator for THz scanning</h4>
     <form id="scanSpeedCalc">
       <input type="text" id="lockinTimeConstant" value="10" />
       <label for="lockinTimeConstant"> Lock-in time constant [ms]</label><br>
@@ -61,7 +71,7 @@
   </script>
   </div>
   <hr />
-  <a>Pulse Energy Calculator</a><br><br>
+  <h4>Pulse Energy Calculator</h4>
   <form id="pulseEnergyCalc">
     <input type="text" id="thzBeampower" value="27E-6" />
     <label for="thzBeampower"> THz beam power [W]</label><br>
@@ -87,7 +97,7 @@
     pulseEnergyCalc()
   </script>
   <hr />
-  <a>Lock-in Voltage Output Calibration
+  <h4>Lock-in Voltage Output Calibration</h4><a>
     \begin{equation} I_{THz,avg}=(e f_{rep})\times N_e^{-}=g\ s\ K_{5077}\frac{V_{out}}{10 V} \end{equation}
     \begin{equation} N_e^{-}=K_{5077}\times s \times 2596 [e^- /V^2] \times V_{out} \end{equation}
   </a>
@@ -152,6 +162,335 @@
     lockInCalibration()
   </script>
   <hr />
+  <h4>Electro-Optic Sampling</h4><a>
+    The THz pulse electric field is given by
+    \begin{equation} E_{THz}(\tau)=\frac{\lambda}{2 \pi n_O^3 r_{41} L}  \Delta \Phi(\tau) \end{equation}
+    The differential phase retardation is given by
+    \begin{equation} \Delta \phi=\sin ^{-1} \left(\frac{I_y-I_x}{I_y+I_x}\right) \approx \frac{I_y-I_x}{I_y+I_x}\end{equation}
+  </a>
+  <form id="electro_Optic_Sampling">
+    <input id="EOS_lambda" type="text" value="800" />
+    <label for="EOS_lambda"> ($\lambda$) Center frequency of sampling pulse</label><br>
+    <input id="EOS_n" type="text" value="2.853" />
+    <label for="EOS_n"> ($n_O$) Refractive Index of ZnTe at $\lambda$</label><br>
+    <input id="EOS_r41" type="text" value="4" />
+    <label for="EOS_r41"> ($r_{41}$) EO coefficient [pm/V]</label><br>
+    <input id="EOS_L" type="text" value="1" />
+    <label for="EOS_L">(L) ZnTe Thickness [mm]</label><br>
+    <input id="EOS_Ix" type="text" value="1" />
+    <label for="EOS_Ix"> ($I_x$) Intensity of balanced photodiode 1</label><br>
+    <input id="EOS_Iy" type="text" value="2" />
+    <label for="EOS_Iy"> ($I_y$) Intensity of balanced photodiode 2</label><br>
+    <p><a>$\Delta \phi$=</a><a id="EOS_Delta_phi"></a></p>
+    <p><a>$E_{THz}(\tau)=$ </a><a id="EOS_EF"></a> V/cm</p>
+  </form>
+  <script>
+    function electro_Optic_Sampling() {
+      try {
+        const EOS_lambda = document.getElementById('EOS_lambda').value;
+        const EOS_r41 = document.getElementById('EOS_r41').value;
+        const EOS_n = document.getElementById('EOS_n').value;
+        const EOS_L = document.getElementById('EOS_L').value;
+        const EOS_Ix = document.getElementById('EOS_Ix').value;
+        const EOS_Iy = document.getElementById('EOS_Iy').value;
+
+        let EOS_Delta_phi = (EOS_Iy - EOS_Ix) / (+EOS_Iy + +EOS_Ix); // [pm/V]
+        let EOS_EF = EOS_Delta_phi * EOS_lambda / (2 * pi * Math.pow(EOS_n, 3) * EOS_r41 * EOS_L * 1E-4);
+        document.getElementById("EOS_Delta_phi").innerHTML = EOS_Delta_phi;
+        document.getElementById("EOS_EF").innerHTML = EOS_EF;
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('electro_Optic_Sampling').addEventListener("input", function() {
+      electro_Optic_Sampling()
+    });
+    electro_Optic_Sampling()
+  </script>
+  <hr />
+  <!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+  <h4>I-V-E Plots</h4>
+  Load Data for I-V curve: <input type="file" id="IVinput"><br />
+    Load Data for EOS waveform: <input type="file" id="EOSinput"><br />
+    Set Bias Voltage: <input type="number" step="0.01" id="biasV" value="-0.2" ><br />
+    Setpoint=<strong><a id="setpoint"></a></strong><br />
+  <hr />
+  <div class="grid-container">
+    <div class="grid-item">
+      <div id="plotIV"></div>
+    </div>
+    <div class="grid-item">
+      <div id="plotIE"></div>
+    </div>
+    <div class="grid-item">
+      <div id="plotEOS"></div>
+    </div>
+    <div class="grid-item">
+      <div id="plotIEcum"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    //-- Event handler for the input tag
+    var EOSinputElement = document.getElementById("EOSinput");
+    EOSinputElement.addEventListener("change", handleFilesEOS, false);
+    var IVinputElement = document.getElementById("IVinput");
+    IVinputElement.addEventListener("change", handleFilesIV, false);
+    var biasVElement = document.getElementById("biasV");
+    biasVElement.addEventListener("change", biasVupdate, false);
+
+    var biasV = document.getElementById("biasV").value;
+    var xValuesEOS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+    var yValuesEOS = [0, 0, 0, 0, 0.5, 0.8, 1, 0.8, 0.5, 0, -0.35, -0.5, -0.35, 0, 0, 0, 0, 0];
+    var yValuesEOSbiased = yValuesEOS.map(x => +x + +biasV);
+    var xValyesIV = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+    var yValuesIV = [-2, -0.7, -0.25, -0.1, -0.03, 0, 0.03, 0.1, 0.25, 0.7, 2];
+    var maxRangex = xValyesIV.reduce(function(max, item) {
+      return Math.max(Math.abs(max), Math.abs(item));
+    });
+    var setpoint = everpolate.polynomial(biasV, xValyesIV, yValuesIV);
+    var xValyesIE = xValuesEOS;
+    var yValuesIE = everpolate.polynomial(yValuesEOS, xValyesIV, yValuesIV);
+    var yValuesIECum = everpolate.polynomial(yValuesEOS, xValyesIV, yValuesIV);
+
+    function handleFilesEOS() {
+      var fileList = this.files;
+      var reader = new FileReader();
+
+      reader.readAsText(fileList[0]);
+      reader.onload = function() {
+        var strDps = reader.result;
+        strDps = strDps.split("\n");
+        xValuesEOS = [];
+        yValuesEOS = [];
+
+        for (var i = 0; i < strDps.length - 1; i++) {
+          xValuesEOS.push(-strDps[i].match(/\S+/g)[0]);
+          yValuesEOS.push(strDps[i].match(/\S+/g)[2]);
+        }
+        yValuesEOSbiased = yValuesEOS.map(x => +x + +biasV);
+        drawUpdate('plotEOS', yValuesEOSbiased, xValuesEOS);
+        updateIEcurves();
+      };
+    }
+
+    function handleFilesIV() {
+      var fileList = this.files;
+      var reader = new FileReader();
+
+      reader.readAsText(fileList[0]);
+      reader.onload = function() {
+        var strDps = reader.result;
+        strDps = strDps.split("\n");
+        xValyesIV = [];
+        yValuesIV = [];
+
+        for (var i = 0; i < strDps.length - 1; i++) {
+          xValyesIV.push(strDps[i].match(/\S+/g)[0]);
+          yValuesIV.push(strDps[i].match(/\S+/g)[1]);
+        }
+        drawUpdate('plotIV', xValyesIV, yValuesIV);
+        drawUpdate('plotEOS', yValuesEOSbiased, xValuesEOS);
+        updateIEcurves();
+      };
+    }
+
+    function drawInit(plotID, xValues, yValues, plotTitle, xLabel, yLabel) {
+      //console.log('abs: ' + Math.abs(xValues) + ' MAX: ' + absMax);
+
+      maxRangex1 = Math.min(xValues);
+      maxRangex2 = Math.max(xValues);
+      if (plotID == 'plotEOS') {
+        maxRangex1 = -maxRangex;
+        maxRangex2 = maxRangex;
+      }
+      plotData = [{
+          x: xValues,
+          y: yValues,
+          type: 'scatter',
+          name: 'Stability Condition Limit',
+          mode: 'lines',
+        }],
+        layout = {
+          title: plotTitle,
+          xaxis: {
+            title: xLabel,
+            range: [maxRangex1, maxRangex2]
+          },
+          yaxis: {
+            title: yLabel,
+            autorange: true
+          },
+          autosize: false,
+          width: 700,
+          height: 400,
+        };
+      Plotly.newPlot(plotID, plotData, layout)
+    }
+
+    function drawUpdate(plotID, xValues, yValues) {
+      //console.log('abs: ' + Math.abs(xValues) + ' MAX: ' + absMax);
+      plotData = [{
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        name: 'Stability Condition Limit',
+        mode: 'lines',
+      }];
+      if (plotID == 'plotEOS') {
+        layout = {
+          xaxis: {
+            range: [-maxRangex, maxRangex]
+          }
+        };
+      } else {
+        layout = {
+          xaxis: {
+            autorange: true
+          }
+        };
+      }
+      Plotly.plot(plotID, plotData)
+      Plotly.deleteTraces(plotID, 0);
+
+    }
+
+    function biasVupdate() {
+      console.log('Bias changed');
+      biasV = document.getElementById("biasV").value;
+      yValuesEOSbiased = yValuesEOS.map(x => +x + +biasV);
+      drawUpdate('plotEOS', yValuesEOSbiased, xValuesEOS);
+      setpoint = everpolate.polynomial(biasV, xValyesIV, yValuesIV);
+      document.getElementById("setpoint").innerHTML = setpoint;
+      updateIEcurves();
+    }
+
+    function updateIEcurves() {
+      xValyesIE = -xValuesEOS;
+      yValuesIE = everpolate.polynomial(yValuesEOSbiased, xValyesIV, yValuesIV);
+      drawUpdate('plotIE', xValyesIE, yValuesIE)
+      yValuesIE.reduce(function(a, b, i) {
+        return yValuesIECum[i] = +a + +b - +setpoint;
+      }, 0);
+      drawUpdate('plotIEcum', xValyesIE, yValuesIECum)
+    }
+
+
+    drawInit('plotEOS', yValuesEOSbiased, xValuesEOS, 'EOS waveform', 'EF Amplitude', 'Time [ps]');
+    drawInit('plotIV', xValyesIV, yValuesIV, 'I-V curve', 'V', 'I');
+    drawInit('plotIE', xValyesIE, yValuesIE, 'I-time curve', 'Time [ps]', 'I');
+    drawInit('plotIEcum', xValyesIE, yValuesIE, 'I-THz (cum)-time curve', 'Time [ps]', 'I-THz(cum)');
+    updateIEcurves();
+    document.getElementById("setpoint").innerHTML = everpolate.polynomial(biasV, xValyesIV, yValuesIV);
+    /*document.getElementById('form').addEventListener("input", function() {
+      drawInit()
+    });*/
+  </script>
+
+  <!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+  <hr />
+  <h4>Field Penetration</h4>
+  <div class="dashedBorder twoColumnsRow">
+    <div class="twoColumns">
+      <form id="formFieldPenetration1">
+        <input type="text" id="nReal" value="270" />
+        <label for="nReal">$n$ Real part of $\tilde{n}$ </label><br>
+        <input id="kappaImag" type="text" value="294" />
+        <label for="kappaImag"> $\kappa$ Imaginary part of $\tilde{n}$</label><br>
+        <input id="lambda1" type="text" value="248E-6" />
+        <label for="lambda1">$\lambda$ Wavelength [m]</label><br>
+        <input id="length1" type="text" value="67E-9" />
+        <label for="length1">l [m]</label><br>
+        </form>
+        <p>$v=$<strong><a id="phaseVelocity"></a></strong> m/s</p>
+        <p>$\alpha=$<strong><a id="absorptionCoeff"></a></strong> $m^{-1}$</p>
+        <p>$\delta_p=$<strong><a id="penetrationDepth"></a></strong> $nm$</p>
+        <p>$\delta_e=$<strong><a id="skinDepth"></a></strong> $nm$</p>
+        <p>$R=$<strong><a id="reflectancia1"></a></strong></p>
+        <p>$T=$<strong><a id="trnsmisivity1"></a></strong></p>
+        <p>$\epsilon_1=$<strong><a id="dielectricConstantReal"></a></strong></p>
+        <p>$\epsilon_2=$<strong><a id="dielectricConstantImag"></a></strong></p>
+
+    </div>
+    <div class="twoColumns">
+      <form id="formFieldPenetration2">
+        <input id="atomicVolume" type="text" value="1.182E-29" />
+        <label for="atomicVolume">Atomic Volume [$m^3$] </label><br>
+        <input id="ePerAtom" type="text" value="1" />
+        <label for="ePerAtom"> Electrons per atom</label><br>
+        <input id="conductivity" type="text" value="5.98E5" />
+        <label for="conductivity">Conductivity [$\Omega^{-1} cm^{-1}$]</label><br>
+        <input id="surfaceField" type="text" value="400" />
+        <label for="surfaceField">EField at surface [V/cm]</label><br>
+        <input id="timeLimit" type="text" value="10" />
+        <label for="timeLimit">Time limit [ps]</label><br>
+      </form>
+        <p>Mobility= <strong><a id="mobility"></a></strong> $cm^2/Vs$</p>
+        <p>Drift Velocity= <strong><a id="driftVelocity"></a></strong> cm/s</p>
+        <p>Distance traveled/Hemisphere radius= <strong><a id="distanceTraveled"></a></strong> nm</p>
+        <p>Hemisphere Volume= <strong><a id="hemisphereVolume"></a></strong> $m^3$</p>
+        <p>Electrons inside hemisphere= <strong><a id="eInHemisphere"></a></strong> </p>
+        <p>Max current= <strong><a id="maxCurrent"></a></strong> pA</p>
+    </div>
+  </div>
+  <script>
+    function fieldPenetration() {
+      try {
+        const nReal = document.getElementById('nReal').value;
+        const kappaImag = document.getElementById('kappaImag').value;
+        const lambda1 = document.getElementById('lambda1').value;
+        const length1 = document.getElementById('length1').value;
+        const atomicVolume = document.getElementById('atomicVolume').value;
+        const ePerAtom = document.getElementById('ePerAtom').value;
+        const conductivity = document.getElementById('conductivity').value;
+        const surfaceField = document.getElementById('surfaceField').value;
+        const timeLimit = document.getElementById('timeLimit').value;
+
+        let phaseVelocity = 3E8 / nReal;
+        let absorptionCoeff = 4 * Math.PI * kappaImag / lambda1;
+        let penetrationDepth = 1E9 / absorptionCoeff;
+        let skinDepth = 2 * penetrationDepth;
+        let reflectancia1 = (+Math.pow(nReal - 1, 2) + +Math.pow(kappaImag, 2)) / (+Math.pow(+nReal + +1, 2) + +Math.pow(kappaImag, 2));
+        let trnsmisivity1 = (Math.pow(+1 - +reflectancia1, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectancia1 * reflectancia1 * Math.exp(-2 * absorptionCoeff * length1));
+        let dielectricConstantReal = (+Math.pow(nReal, 2) - +Math.pow(kappaImag, 2));
+        let dielectricConstantImag = 2 * nReal * kappaImag;
+        let mobility = (atomicVolume * 1E6 / ePerAtom) * conductivity / e;
+        let driftVelocity = mobility * surfaceField;
+        let distanceTraveled = driftVelocity * timeLimit / 1E5;
+        let hemisphereVolume = 2 / 3 * Math.PI * Math.pow(distanceTraveled / 1E9, 3);
+        let eInHemisphere = hemisphereVolume / atomicVolume;
+        let maxCurrent = eInHemisphere * e * 1E12;
+
+        document.getElementById("phaseVelocity").innerHTML = phaseVelocity;
+        document.getElementById("absorptionCoeff").innerHTML = absorptionCoeff;
+        document.getElementById("penetrationDepth").innerHTML = penetrationDepth;
+        document.getElementById("skinDepth").innerHTML = skinDepth;
+        document.getElementById("reflectancia1").innerHTML = reflectancia1;
+        document.getElementById("trnsmisivity1").innerHTML = trnsmisivity1;
+        document.getElementById("dielectricConstantReal").innerHTML = dielectricConstantReal;
+        document.getElementById("dielectricConstantImag").innerHTML = dielectricConstantImag;
+        document.getElementById("mobility").innerHTML = mobility;
+        document.getElementById("driftVelocity").innerHTML = driftVelocity;
+        document.getElementById("distanceTraveled").innerHTML = distanceTraveled;
+        document.getElementById("hemisphereVolume").innerHTML = hemisphereVolume;
+        document.getElementById("eInHemisphere").innerHTML = eInHemisphere;
+        document.getElementById("maxCurrent").innerHTML = maxCurrent;
+
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('formFieldPenetration1').addEventListener("input", function() {
+      fieldPenetration()
+    });
+    document.getElementById('formFieldPenetration2').addEventListener("input", function() {
+      fieldPenetration()
+    });
+    fieldPenetration()
+  </script>
+  <a>Where Hemisphere Volume=$\frac{2}{3}\pi r^3$ , (mobility) $\mu=V_{atomic}*\sigma / e$, (drift velocity) $v=\mu E$</a><br />
 </body>
 
 </html>

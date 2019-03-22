@@ -32,7 +32,7 @@
   <hr>
   <h3>Related Topics</h3>
   <ul>
-    <li><a href="electromagnetism.scientar.com/index.html">Electrodynamics</a></li>
+    <li><a href="https://physics.scientar.com/electromagnetism/">Electrodynamics</a></li>
   </ul>
   <hr><br>
   <div class="text">
@@ -73,6 +73,7 @@
       <!--
       <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
       <label for="eq">Equation</label><br>-->
+
       <input type="text" id="nReal" value="4.141" />
       <label for="nReal">$n$ Real part of $\tilde{n}$ </label><br>
       <input id="kappaImag" type="text" value="2.215" />
@@ -81,21 +82,23 @@
       <label for="lambda1">$\lambda$ Wavelength [m]</label><br>
       <input id="length1" type="text" value="10E-6" />
       <label for="length1">l [m]</label><br>
+      <!--
       <input id="eps1" type="text" value="2.215" />
       <label for="eps1"> $\epsilon_1$ </label><br>
       <input id="eps2" type="text" value="400E-9" />
-      <label for="eps2">$\epsilon_1$ </label><br>
+      <label for="eps2">$\epsilon_1$ </label><br>-->
       <p>$v=$<strong><a id="phaseVelocity"></a></strong> m/s</p>
       <p>$\alpha=$<strong><a id="absorptionCoeff"></a></strong> $m^{-1}$</p>
+      <p>$\delta_p=$<strong><a id="penetrationDepth"></a></strong> $m$</p>
       <p>$R=$<strong><a id="reflectancia1"></a></strong></p>
       <p>$T=$<strong><a id="trnsmisivity1"></a></strong></p>
       <p>$\epsilon_1=$<strong><a id="dielectricConstantReal"></a></strong></p>
       <p>$\epsilon_2=$<strong><a id="dielectricConstantImag"></a></strong></p>
+      <!--
       <p>$n=$<strong><a id="nRealOutput"></a></strong></p>
-      <p>$\kappa=$<strong><a id="kappaImagOutput"></a></strong></p>
+      <p>$\kappa=$<strong><a id="kappaImagOutput"></a></strong></p>-->
     </form>
 
-    <div id="plot"></div>
     <script>
       function refractiveIndexCalc() {
         try {
@@ -103,25 +106,27 @@
           const kappaImag = document.getElementById('kappaImag').value;
           const lambda1 = document.getElementById('lambda1').value;
           const length1 = document.getElementById('length1').value;
-          const eps1 = document.getElementById('eps1').value;
-          const eps2 = document.getElementById('eps2').value;
+          //const eps1 = document.getElementById('eps1').value;
+          //const eps2 = document.getElementById('eps2').value;
           let phaseVelocity = 3E8 / nReal;
           let absorptionCoeff = 4 * Math.PI * kappaImag / lambda1;
+          let penetrationDepth = 1 / absorptionCoeff;
           let reflectancia1 = (+Math.pow(nReal - 1, 2) + +Math.pow(kappaImag, 2)) / (+Math.pow(+nReal + +1, 2) + +Math.pow(kappaImag, 2));
           let trnsmisivity1 = (Math.pow(+1 - +reflectancia1, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectancia1 * reflectancia1 * Math.exp(-2 * absorptionCoeff * length1));
-          let dielectricConstantReal = (+Math.pow(nReal - 1, 2) - +Math.pow(kappaImag, 2));
+          let dielectricConstantReal = (+Math.pow(nReal, 2) - +Math.pow(kappaImag, 2));
           let dielectricConstantImag = 2 * nReal * kappaImag;
-          let nRealOutput = (1 / Math.sqrt(2)) * Math.sqrt(+eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
-          let kappaImagOutput = (1 / Math.sqrt(2)) * Math.sqrt(-eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
+          //let nRealOutput = (1 / Math.sqrt(2)) * Math.sqrt(+eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
+          //let kappaImagOutput = (1 / Math.sqrt(2)) * Math.sqrt(-eps1 + +Math.sqrt((+eps1 * eps1 + eps2 * eps2)));
           //trnsmisivity1 = Math.exp(1);
           document.getElementById("phaseVelocity").innerHTML = phaseVelocity;
           document.getElementById("absorptionCoeff").innerHTML = absorptionCoeff;
+          document.getElementById("penetrationDepth").innerHTML = penetrationDepth;
           document.getElementById("reflectancia1").innerHTML = reflectancia1;
           document.getElementById("trnsmisivity1").innerHTML = trnsmisivity1;
           document.getElementById("dielectricConstantReal").innerHTML = dielectricConstantReal;
           document.getElementById("dielectricConstantImag").innerHTML = dielectricConstantImag;
-          document.getElementById("nRealOutput").innerHTML = nRealOutput;
-          document.getElementById("kappaImagOutput").innerHTML = kappaImagOutput;
+          //document.getElementById("nRealOutput").innerHTML = nRealOutput;
+          //document.getElementById("kappaImagOutput").innerHTML = kappaImagOutput;
         } catch (err) {
           console.error(err)
           alert(err)

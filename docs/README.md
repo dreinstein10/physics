@@ -9,6 +9,8 @@ The list of topics up to now is this:
 - [THz-STM](https://physics.scientar.com/thzstm/)
 - [Special Relativity](https://physics.scientar.com/specialRelativity/)
 - [Electrodynamics](https://physics.scientar.com/electrodynamics/)
+- [Optical Properties of Solids](https://physics.scientar.com/optical_properties_of_solids/)
+- [Machine Learning](https://physics.scientar.com/machine_learning/)
 - [Formula Sheet](https://physics.scientar.com/formula_sheet/)
 
 
