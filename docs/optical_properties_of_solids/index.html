@@ -36,6 +36,16 @@
   </ul>
   <hr><br>
   <div class="text">
+    Materials can be loosely classified as
+    <ul>
+      <li> Crystalline insulators and semiconductors </li>
+      <li> Glasses </li>
+      <li> Metals </li>
+      <li> Molecular materials </li>
+      <li> Doped glasses and insulators </li>
+    </ul>
+  </div>
+  <div class="text">
     <h4>Optical Coefficients</h4>
     <a>
       The refractive index
@@ -138,7 +148,101 @@
       refractiveIndexCalc()
     </script>
   </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+  <hr>
+  <div class="text">
+    <h3>Classical propagation</h3>
+    <h4>Atomic Oscillators</h4>
+    <a>
+      The reduced mass is given by
+      \begin{equation} \frac{1}{\mu}= \frac{1}{m_0}+\frac{1}{m_N} \end{equation}
+      The restoring force $K_s$ relation is
+      \begin{equation} \omega_0=\sqrt{\frac{K_s}{\mu}} \end{equation}
+      The magnitude of the time varying dipole is given by
+      \begin{equation} p(t)=-ex(t) \end{equation}
+    </a>
+    <h4>Lorentz Oscillator</h4>
+    <a>
+      The displacement x of the electron is governed by the equation of motion of the form:
+      \begin{equation} m_0\frac{d^2x}{dt^2}+ m_0\gamma\frac{dx}{dt} +m_o \omega_0^2 x = eE \end{equation}
+      The time dependence of the electric field
+      \begin{equation} E(t)=E_0 \cos(\omega t + \Phi)= E_0 \Re(e^{-1(\omega t + \Phi)}) \end{equation}
+      By looking for solutions of the form $x(t)=X_0 \Re(e^{-i(\omega t + \Phi ')})$ it is found that
+      \begin{equation} X_0=\frac{-e E_0/m_o}{\omega_0^2-\omega^2-i\gamma \omega} \end{equation}
+      And since $P_{resonant}=Np=-Nex=\frac{Ne^2}{m_0}\frac{1}{\omega_0^2-\omega^2-i\gamma \omega}E$ , and on the other hand  $D=\epsilon_0 E +P=\epsilon_0 E +\epsilon_0 \chi E +P_{resonant}=D=\epsilon_0 \epsilon_r E$, then
+      \begin{equation} \epsilon_r(\omega)=1+\frac{Ne^2}{\epsilon_0 m_0}\sum_j \frac{f_j}{\omega_{0j}^2-\omega^2-i\gamma_j \omega} \end{equation}
+      \begin{equation} \epsilon_r(0)=\epsilon_{st}=1+\chi+\frac{Ne^2}{\epsilon_0 m_0 \omega_0^2} \end{equation}
+      \begin{equation} \epsilon_r(\infty)=\epsilon_{\infty}=1+\chi \end{equation}
+      which is valid in a rarefied gas with a low density of atoms.
+    </a>
+    </br></br>
+    <a > <img src="https://www.researchgate.net/profile/Roger_French/publication/255661988/figure/fig4/AS:667858862346261@1536241369907/The-index-of-refraction-n-and-extinction-coefficient-k-of-a-Lorentz-Oscillator-Model.ppm" class="mediumSizeImg" /></a>
+    <a>*Picture taken from: </a><a href="https://www.researchgate.net/figure/The-index-of-refraction-n-and-extinction-coefficient-k-of-a-Lorentz-Oscillator-Model_fig4_255661988"> here </a>
+    <br>
+    <a>
+      If we invoke the law of causality and apply complex number analysis, we can derive general relationships between the real and imaginary parts of the refractive index, known as <strong>Kramers-Kronig relationships.</strong>
+      \begin{equation} n(\omega)-1=\frac{2}{\pi} P \int_0^\infty \frac{\omega' \kappa(\omega')}{\omega'^2 -\omega^2} d\omega' \end{equation}
+      \begin{equation} \kappa(\omega)-1=-\frac{2}{\pi} P \int_0^\infty \frac{\omega'^2 [n(\omega')-1]}{\omega'^2 -\omega^2} d\omega' \end{equation}
+      where P means we take the principal part of the integral.
+    </a>
+    <h4>Dispersion</h4>
+    <a>
+      A pulse of light of duration $t_p$ must contain a spread of frequencies such that $\Delta v =\frac{1}{t_p}$ to satisfy the uncertainty principle  $\Delta v \Delta t \approx 1$.
+      The pulse spreading parameter is the <strong>group velocity dispersion</strong> (GVD). The material dispersion parameter is given by
+      \begin{equation} D=-\frac{\lambda}{c}\frac{d^2n}{d\lambda^2} \end{equation}
+      And the temporal broadening of a pulse is given by  $\Delta \tau (ps)= |D| \Delta\lambda L$.
+    </a>
+    <h4>Optical Anisotropy</h4>
+    <a>
+      The <strong>natural anisotropy</strong> called <strong>birefringence</strong> arises because of the different optical properties along different crystlline axes. The properties of a birefringent crystall can be described by the tensor equation $\mathbf{P}=\epsilon_0\mathbf{\chi E}$ or
+      \[
+      \begin{bmatrix}     P_x \\   P_y \\    P_z   \end{bmatrix}
+  = \epsilon_0
+      \begin{bmatrix}      \chi_{11} & \chi_{12} & \chi_{13}  \\    \chi_{21} & \chi_{22} & \chi_{23}  \\    \chi_{31} & \chi_{32} & \chi_{33}    \end{bmatrix}
+  \begin{bmatrix}   E_x \\  E_y \\  E_z  \end{bmatrix}
+  \]
+  If the cartesian coordinates correspond to the principal axes of the crystal, then
+  \[
+  \chi =
+  \begin{bmatrix}    \chi_{11} & 0 & 0  \\  0 & \chi_{22} & 0  \\   0 & 0 & \chi_{33}  \end{bmatrix}
+\begin{bmatrix}  E_x \\ E_y \\ E_z  \end{bmatrix}
+\]
 
+During double refraction, the extraordinary ray (e-ray) is the one that does not obey Snell's law of refraction. If the optic axis lies in the plane of the input surface of the crystall (a retarder plate), then the phase difference between e-ray and o-ray is given by
+\begin{equation} \Delta \phi =\frac{2\pi |n_o-n_e|d}{\lambda}=\frac{2\pi |\Delta n| d}{\lambda} \end{equation}
+where $d$ is the thickness of the retarded plate.
+    </a>
+
+    <a>
+      The <strong>induced anisotropy</strong> can be caused by strain and external fields. The strain induced birefringence is called <strong>photo-elastic effect</strong>. The anisotropy induced by applying an electric field along the direction transverse to the light direction is called the <strong>Kerr effect</strong>, and is given by
+
+\begin{equation} \Delta n = \lambda K E^2 \end{equation}
+where $K$ is the Kerr constant and $\lambda$ the vacuum wavelength. It is also known as the quadratic electro-optic effect.
+    </a>
+    <h4>Optical Chirality</h4>
+    <a>
+      An optical medium that possesses chirality implies that it responds different to left- and right-circular light. A difference in the real part of the complex refractive index gives rise to <strong>optical activity (circular birefringence)</strong>. The rotation angle of the polarization in a medium of thickness $d$ is given by
+      \begin{equation} \theta=\frac{\pi d}{\lambda}(n_R-n_l)) \end{equation}
+      A diffence in the imaginary part of the complex refractive index causes <strong>circular dichroism</strong>. Optical chirality can also be induced by applying a magnetic field, which in transparent materials, give rise to the <strong>Faraday Effect / magneto-optical Kerr Effect</strong>.
+    </a>
+    <br><br>
+    <a > <img src="http://hackert.cm.utexas.edu/courses/ch370/old2008/CD/CD_cir_birefring2_files/p13.gif" class="twoColumnsImg " /></a>
+    <a > <img src="https://ja01.chem.buffalo.edu/~jochena/images/optrot1.gif" class="twoColumnsImg " /></a>
+    <br><a>*Pictures taken from: </a><a href="http://hackert.cm.utexas.edu/courses/ch370/old2008/CD/CD_cir_birefring2.htm"> here (Optical activity & Circular dichroism)</a>
+    <a>and  </a><a href="https://ja01.chem.buffalo.edu/~jochena/research/opticalactivity.html"> here (Circular dichroism)</a>
+  </div>
+  <!--////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+  <hr>
+  <div class="text">
+    <h3>Interband absorption</h3>
+    <h4>Interband transitions</h4>
+    <a>
+      The refractive index
+      \begin{equation} n= \frac{c}{v} \end{equation}
+
+    </a>
+
+  </div>
 </body>
 
 </html>

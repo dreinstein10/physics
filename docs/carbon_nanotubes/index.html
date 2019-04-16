@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Carbon Nanotubes</title>
+  <!--<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script>
+    $("#header").load("../header.html");
+  //$("#footer").load("footer.html");
+  </script>-->
+  <meta charset="utf-8">
+  <link rel="icon" href="../assets/favicon.ico">
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ tex2jax: { inlineMath: [ ['$','$'], ["\\(","\\)"] ], processEscapes: true } });
+  </script>
+  <!-- Math.js library-->
+  <script src="https://unpkg.com/mathjs@5.1.1/dist/math.min.js"></script>
+  <!-- Plotly library-->
+  <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
+  <!-- MathJax to write equations in html-->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+  <!-- Imports Physical Constants -->
+  <script src='../js/physicalConstants.js'></script>
+
+  <script src="../js/HexagonTools.js"></script>
+  <script src="../js/Grid.js"></script>
+  <!--<script src="../js/HexCalcs.js"></script>-->
+  <link rel="stylesheet" type="text/css" href="../css/common.css" />
+</head>
+
+<body style="width:90%;margin: auto;">
+  <div style="text-align:center;">
+    <h1>Carbon Nanotubes </h1>
+    <h2><em>A collection of online tools for STMing</em></h2>
+  </div>
+  <h4>Open Source Code: <a href="https://github.com/dreinstein10/physics.git">Github</a></h4>
+  <a><em> *(If you find any errors in the code, please let me know on Github)</em></a>
+  <br>
+  <a href="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/CNTnames.svg/526px-CNTnames.svg.png"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/CNTnames.svg/526px-CNTnames.svg.png" class="headerImg" /></a>
+  *Picture taken from: <a href="https://en.wikipedia.org/wiki/Optical_properties_of_carbon_nanotubes"> https://en.wikipedia.org/wiki/Optical_properties_of_carbon_nanotubes</a>
+  <hr>
+  <h3>Related Topics</h3>
+  <ul>
+    <li><a href="https://physics.scientar.com/optical_properties_of_solids/">Optical Properties of Solids</a></li>
+  </ul>
+
+  <hr><br>
+  <p>Diameter typically varies in the range 0.4–40 nm (i.e. "only" ~100 times), but the length can vary ~10,000 times, reaching 55.5 cm. </p>
+  <h3>Optical Properties</h3>
+  <div class="electron_wave_funct">
+    <a>SWCNT can be defined by its diameter and chiral angle. The chiral angle can range from 0 to 30 degrees.
+However, more conveniently, a pair of indices (n, m) is used instead. The indices refer to equally long unit vectors at 60° angles to each other across a single 6-member carbon ring.
+When |m – n| = 3k (k is integer), the tube is metallic; but if |m – n| = 3k ± 1, the tube is semiconducting.
+    </a>
+    <br>
+    <a>The nanotube diameter d is related to m and n as:
+      \begin{equation} d =\frac{a}{\pi}\sqrt{(n^2+nm+m^2)} \end{equation}
+    </a>
+
+    <p>
+      A first approach to calculate the transition energy is defined as
+      \begin{equation} E_{sc,m} =2i\frac{\gamma_0 a_{c-c}}{d} \end{equation}
+      where i=1 for $S{11}$, i=2 for $S{22}$ and i=3 for $M{11}$, $\gamma0=2.9eV$ is the nearest neighbout carbon-carbon interaction energy and $a_{c-c}=0.144$ is the nearest neighbour carbon-carbon distance. (*"Optical absorption spectroscopy and
+      properties of single walled carbon nanotubes at high temperature")
+    </p>
+  </div>
+  <br>
+  <!-- Wave function solver-->
+  <div class="dashedBorder">
+    <form id="form">
+      <!--
+      <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
+      <label for="eq">Equation</label><br>-->
+      <input id="CNT_n" type="number" step="1"  pattern="\d+" value="4" />
+      <label for="CNT_n"> (n) Number of unit vectors along $a_2$<a id="out_vHeight_J"></a></label><br>
+      <input id="CNT_m" type="number" step="1"  pattern="\d+" value="2" />
+      <label for="CNT_m">(m) Number of unit vectors along $a_1$ <a id="out_energy_J"></a></label><br>
+      <a>CNT type: </a><strong><a id="CNT_type"></a> </strong><br>
+      <a>Diameter: </a><strong> <a id="CNT_diameter"></a> nm </strong><br>
+      <a>Eg: </a><strong><a id="CNT_Eg"></a> eV</strong></p>
+    </form>
+  </div>
+  <div>
+    <canvas id="hexCanvas" width="800" height="400" style="width:800px;height:400px" />
+
+</div>
+
+    <div id="energy_diameter_plot"></div>
+<div>
+<a > <img src="https://upload.wikimedia.org/wikipedia/commons/b/b6/SSPN41.PNG" class=" twoColumnsImg" /></a>
+<!--<a > <img src="https://upload.wikimedia.org/wikipedia/commons/c/c5/DOS_multdim.jpg" class="mediumSizeImg twoColumns" /></a>-->
+<a > <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/KatauraPlot.jpg" class=" twoColumnsImg" /></a>
+</br> <a>*Pictures taken from: </a><a href="https://en.wikipedia.org/wiki/Optical_properties_of_carbon_nanotubes"> https://en.wikipedia.org/wiki/Optical_properties_of_carbon_nanotubes</a>
+</div>
+
+<script>
+  function CNT_update() {
+    try {
+      let CNT_n = document.getElementById('CNT_n').value
+      let CNT_m = document.getElementById('CNT_m').value
+      let CNT_diameter = (0.246 / Math.PI) * math.sqrt(CNT_n * CNT_n + CNT_n * CNT_m + CNT_m * CNT_m);
+      let CNT_type = '';
+      let CNT_Eg11 = '';let CNT_Eg22='';let CNT_Eg22_txt='';
+      switch (math.abs(CNT_m - CNT_n)%3) {
+        case 0:
+          CNT_type = 'metallic';
+          CNT_Eg11=2*3*2.9*0.144/CNT_diameter;
+          CNT_Eg22=0;
+          break;
+          case 1:
+            case 2:
+              CNT_type = 'semiconducting';
+              CNT_Eg11=2*1*2.9*0.144/CNT_diameter;
+              CNT_Eg22=2*2*2.9*0.144/CNT_diameter;
+              CNT_Eg22_txt=' , '+CNT_Eg22.toPrecision(4);
+              break;
+        default:
+
+      }
+console.log(math.abs(CNT_m - CNT_n)%3);
+      document.getElementById("CNT_type").innerHTML = CNT_type;
+      document.getElementById("CNT_diameter").innerHTML = CNT_diameter;
+      document.getElementById("CNT_Eg").innerHTML = CNT_Eg11.toPrecision(4) +'  ' +CNT_Eg22_txt;
+
+      ////// More info about this functions at:   https://github.com/mpalmerlee/HexagonTools   ///////
+      var height = 44;
+      var width = height / (math.sqrt(3)/2);
+
+      var y = height / 2.0;
+      //solve quadratic
+      var a = -3.0;
+      var b = (-2.0 * width);
+      var c = (Math.pow(width, 2)) + (Math.pow(height, 2));
+
+      var z = (-b - Math.sqrt(Math.pow(b, 2) - (4.0 * a * c))) / (2.0 * a);
+
+      var x = (width - z) / 2.0;
+      console.log("Values for Hex: \nSide Length, z:" + z + "\nx: " + x + "\ny: " + y +"\nWidth: " + width + "\nHeight: " + height);
+
+      HT.Hexagon.Static.ORIENTATION = HT.Hexagon.Orientation.Rotted; // HT.Hexagon.Static.ORIENTATION = HT.Hexagon.Orientation.Normal;
+      HT.Hexagon.Static.WIDTH = height;
+      HT.Hexagon.Static.HEIGHT = width;
+      HT.Hexagon.Static.SIDE = z;
+      //  drawHexGrid();
+      var grid = new HT.Grid(800, 400);
+      var canvas = document.getElementById("hexCanvas");
+      var ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, 800, 400);
+      for (var h in grid.Hexes) {
+        grid.Hexes[h].draw(ctx);
+      }
+      var offset = x;
+      ctx.strokeStyle = "#0000FF";
+      ctx.beginPath();
+      ctx.moveTo(0, offset);
+      ctx.lineTo(CNT_n * height, offset);
+      ctx.lineTo(CNT_n * height+CNT_m * height/2, offset+CNT_m*(z*3/2));
+      ctx.lineTo(CNT_m * height/2, offset+CNT_m*(z*3/2));
+      ctx.lineTo(0, offset);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = "#FF0000";
+      ctx.moveTo(0, offset);
+      ctx.lineTo(CNT_n * height+CNT_m * height/2, offset+CNT_m*(z*3/2));
+      ctx.stroke();
+/*
+  var update = {'marker':{ size:16}};
+  //var update = {x: [1.2]};
+  Plotly.restyle('energy_diameter_plot', update, 3);
+
+  */
+  var update = {
+  annotations: [
+    {
+      x: CNT_diameter,
+      y: CNT_Eg11,
+      text: '('+CNT_n+','+CNT_m+') ',
+      font: {
+          size: 18
+        },
+      showarrow: true,
+        arrowwidth: 3,
+      arrowhead: 1,
+      ax: 0,
+      ay: -30
+    },
+    {
+      x: CNT_diameter,
+      y: CNT_Eg22,
+      text: '('+CNT_n+','+CNT_m+') ',
+      font: {
+          size: 18
+        },
+      showarrow: true,
+        arrowwidth: 3,
+      arrowhead: 1,
+      ax: 0,
+      ay: -30
+    }
+  ]
+};
+Plotly.relayout('energy_diameter_plot', update)
+
+    } catch (err) {
+      console.error(err)
+      alert(err)
+    }
+  }
+  document.getElementById('form').addEventListener("input", function() {
+    CNT_update()
+  });
+  plot_energy_gaps();
+  CNT_update();
+
+  function plot_energy_gaps(){
+
+          let xValues = math.range(0, 2, 0.1).toArray();
+          let S11x=[];  let S22x=[];   let M11x=[];    let S11y=[];    let S22y=[];      let M11y=[];
+          let myDotx=[0.4];
+          let myDoty=[2*1*2.9*0.144/0.4];
+    let d=0;
+    let Eg=0;
+    for (var n = 2; n <= 16; n++) {
+      for (var m = 0; m <= 16; m++) {
+
+        d=(0.246 / Math.PI) * math.sqrt(n * n + n * m + m * m);
+
+        switch (math.abs(m - n)%3) {
+          case 0: // Metallic
+            Eg=2*3*2.9*0.144/d;
+            M11x.push(d);
+            M11y.push(Eg);
+            break;
+            case 1: // Semiconductive
+              case 2:
+              Eg=2*1*2.9*0.144/d;
+              S11x.push(d);
+              S11y.push(Eg);
+              Eg=2*2*2.9*0.144/d;
+              S22x.push(d);
+              S22y.push(Eg);
+                break;
+          default:
+
+        }
+        //console.log(n+","+m+":"+d+"="+Eg);
+    if(m==n){break;}
+    }
+    }
+
+          const aS11 = {
+            x: S11x,
+            y: S11y,
+            mode:'markers',
+            type: 'scatter',
+            name: 'S11'
+          }
+          const aS22 = {
+            x: S22x,
+            y: S22y,
+            mode:'markers',
+            type: 'scatter',
+            name: 'S22'
+          }
+          const aM11 = {
+            x: M11x,
+            y: M11y,
+            mode:'markers',
+            type: 'scatter',
+            name: 'M11'
+          }
+          var layout = {
+            //title: 'Free electron & potential barrier',
+            xaxis: {
+              title: 'X [nm]',
+              range: [0.4, 2]
+            },
+            yaxis: {
+              title: 'Energy [eV]',
+              range: [0.3, 5.5]
+            }
+          };
+
+          const data = [aS11, aS22, aM11]
+          Plotly.newPlot('energy_diameter_plot', data, layout)
+  }
+</script>
+</body>
+
+</html>

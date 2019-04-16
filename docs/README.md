@@ -11,6 +11,7 @@ The list of topics up to now is this:
 - [Electrodynamics](https://physics.scientar.com/electrodynamics/)
 - [Optical Properties of Solids](https://physics.scientar.com/optical_properties_of_solids/)
 - [Machine Learning](https://physics.scientar.com/machine_learning/)
+- [Carbon Nanotubes](https://physics.scientar.com/carbon_nanotubes/)
 - [Formula Sheet](https://physics.scientar.com/formula_sheet/)
 
 

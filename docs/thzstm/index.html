@@ -14,12 +14,10 @@
   <script src="https://cdn.plot.ly/plotly-1.35.2.min.js"></script>
   <!-- MathJax to write equations in html-->
   <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-  <!-- Imports Everpolate Library -->
+  <!-- Imports Everpolate for Inter/Extra-polations -->
   <script src="../js/everpolate.browserified.min.js"></script>
   <!-- Imports Physical Constants -->
   <script src='../js/physicalConstants.js'></script>
-  <!-- Imports Everpolate for Inter/Extra-polations -->
-  <script src="./js/everpolate.browserified.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../css/common.css" />
 </head>
 
@@ -425,13 +423,15 @@
         <label for="surfaceField">EField at surface [V/cm]</label><br>
         <input id="timeLimit" type="text" value="10" />
         <label for="timeLimit">Time limit [ps]</label><br>
+        <input id="laserRepRate3" type="text" value="250E3" />
+        <label for="laserRepRate3"> Laser repetition rate [Hz]</label><br>
       </form>
         <p>Mobility= <strong><a id="mobility"></a></strong> $cm^2/Vs$</p>
         <p>Drift Velocity= <strong><a id="driftVelocity"></a></strong> cm/s</p>
         <p>Distance traveled/Hemisphere radius= <strong><a id="distanceTraveled"></a></strong> nm</p>
         <p>Hemisphere Volume= <strong><a id="hemisphereVolume"></a></strong> $m^3$</p>
         <p>Electrons inside hemisphere= <strong><a id="eInHemisphere"></a></strong> </p>
-        <p>Max current= <strong><a id="maxCurrent"></a></strong> pA</p>
+        <p>Max. Avg. current= <strong><a id="maxAvgCurrent"></a></strong> pA</p>
     </div>
   </div>
   <script>
@@ -446,6 +446,7 @@
         const conductivity = document.getElementById('conductivity').value;
         const surfaceField = document.getElementById('surfaceField').value;
         const timeLimit = document.getElementById('timeLimit').value;
+        const laserRepRate3 = document.getElementById('laserRepRate3').value;
 
         let phaseVelocity = 3E8 / nReal;
         let absorptionCoeff = 4 * Math.PI * kappaImag / lambda1;
@@ -460,7 +461,7 @@
         let distanceTraveled = driftVelocity * timeLimit / 1E5;
         let hemisphereVolume = 2 / 3 * Math.PI * Math.pow(distanceTraveled / 1E9, 3);
         let eInHemisphere = hemisphereVolume / atomicVolume;
-        let maxCurrent = eInHemisphere * e * 1E12;
+        let maxAvgCurrent = eInHemisphere * e * laserRepRate3 * 1E12;
 
         document.getElementById("phaseVelocity").innerHTML = phaseVelocity;
         document.getElementById("absorptionCoeff").innerHTML = absorptionCoeff;
@@ -475,7 +476,7 @@
         document.getElementById("distanceTraveled").innerHTML = distanceTraveled;
         document.getElementById("hemisphereVolume").innerHTML = hemisphereVolume;
         document.getElementById("eInHemisphere").innerHTML = eInHemisphere;
-        document.getElementById("maxCurrent").innerHTML = maxCurrent;
+        document.getElementById("maxAvgCurrent").innerHTML = maxAvgCurrent;
 
       } catch (err) {
         console.error(err)
@@ -490,7 +491,7 @@
     });
     fieldPenetration()
   </script>
-  <a>Where Hemisphere Volume=$\frac{2}{3}\pi r^3$ , (mobility) $\mu=V_{atomic}*\sigma / e$, (drift velocity) $v=\mu E$</a><br />
+  <a>where {Volume}_{Hemisphere}=$\frac{2}{3}\pi r^3$ , (mobility) $\mu=V_{atomic}*\sigma / e$, (drift velocity) $v=\mu E$ , $I_{avg}= (Num)e^- \times 1.602E^{-19} C \times LaserRepRate $ </a><br />
 </body>
 
 </html>
