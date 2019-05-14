@@ -77,7 +77,7 @@ When |m – n| = 3k (k is integer), the tube is metallic; but if |m – n| = 3k 
       <label for="CNT_m">(m) Number of unit vectors along $a_1$ <a id="out_energy_J"></a></label><br>
       <a>CNT type: </a><strong><a id="CNT_type"></a> </strong><br>
       <a>Diameter: </a><strong> <a id="CNT_diameter"></a> nm </strong><br>
-      <a>Eg: </a><strong><a id="CNT_Eg"></a> eV</strong></p>
+      <a>Eg: </a><strong><a id="CNT_Eg"></a> </strong></p>
     </form>
   </div>
   <div>
@@ -112,15 +112,15 @@ When |m – n| = 3k (k is integer), the tube is metallic; but if |m – n| = 3k 
               CNT_type = 'semiconducting';
               CNT_Eg11=2*1*2.9*0.144/CNT_diameter;
               CNT_Eg22=2*2*2.9*0.144/CNT_diameter;
-              CNT_Eg22_txt=' , '+CNT_Eg22.toPrecision(4);
+              CNT_Eg22_txt=' , '+CNT_Eg22.toPrecision(4)+' eV  ('+(1240/CNT_Eg22).toPrecision(4)+' nm)';
               break;
         default:
 
       }
 console.log(math.abs(CNT_m - CNT_n)%3);
       document.getElementById("CNT_type").innerHTML = CNT_type;
-      document.getElementById("CNT_diameter").innerHTML = CNT_diameter;
-      document.getElementById("CNT_Eg").innerHTML = CNT_Eg11.toPrecision(4) +'  ' +CNT_Eg22_txt;
+      document.getElementById("CNT_diameter").innerHTML = CNT_diameter.toPrecision(4);
+      document.getElementById("CNT_Eg").innerHTML = CNT_Eg11.toPrecision(4) +' eV  ('+(1240/CNT_Eg11).toPrecision(4)+' nm)' +CNT_Eg22_txt;
 
       ////// More info about this functions at:   https://github.com/mpalmerlee/HexagonTools   ///////
       var height = 44;

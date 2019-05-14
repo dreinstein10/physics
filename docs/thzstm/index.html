@@ -175,9 +175,9 @@
     <label for="EOS_r41"> ($r_{41}$) EO coefficient [pm/V]</label><br>
     <input id="EOS_L" type="text" value="1" />
     <label for="EOS_L">(L) ZnTe Thickness [mm]</label><br>
-    <input id="EOS_Ix" type="text" value="1" />
+    <input id="EOS_Ix" type="text" value="0.0675" />
     <label for="EOS_Ix"> ($I_x$) Intensity of balanced photodiode 1</label><br>
-    <input id="EOS_Iy" type="text" value="2" />
+    <input id="EOS_Iy" type="text" value="0.0670" />
     <label for="EOS_Iy"> ($I_y$) Intensity of balanced photodiode 2</label><br>
     <p><a>$\Delta \phi$=</a><a id="EOS_Delta_phi"></a></p>
     <p><a>$E_{THz}(\tau)=$ </a><a id="EOS_EF"></a> V/cm</p>
@@ -195,7 +195,7 @@
         let EOS_Delta_phi = (EOS_Iy - EOS_Ix) / (+EOS_Iy + +EOS_Ix); // [pm/V]
         let EOS_EF = EOS_Delta_phi * EOS_lambda / (2 * pi * Math.pow(EOS_n, 3) * EOS_r41 * EOS_L * 1E-4);
         document.getElementById("EOS_Delta_phi").innerHTML = EOS_Delta_phi;
-        document.getElementById("EOS_EF").innerHTML = EOS_EF;
+        document.getElementById("EOS_EF").innerHTML = EOS_EF.toPrecision(4);
       } catch (err) {
         console.error(err)
         alert(err)
@@ -213,6 +213,10 @@
     Load Data for EOS waveform: <input type="file" id="EOSinput"><br />
     Set Bias Voltage: <input type="number" step="0.01" id="biasV" value="-0.2" ><br />
     Setpoint=<strong><a id="setpoint"></a></strong><br />
+  <div id="peakEFcalcDiv" style="visibility:hidden;">
+    E-field at peak =<strong><a id="eFieldPeak"></a></strong> V/cm<br />
+    $E_{THz-peak}$=<a id="EFlambda"></a>nm *((<a id="EFIPd1_1"></a> - <a id="EFIPd2_1"></a>)/(<a id="EFIPd1_2"></a> + <a id="EFIPd2_2"></a>))/(2 *$\pi$ *<a id="EFn0"></a>$^3$ *<a id="EFr41"></a>pm/V * <a id="EFL"></a>mm)
+  </div><br />
   <hr />
   <div class="grid-container">
     <div class="grid-item">
@@ -252,6 +256,11 @@
     var yValuesIE = everpolate.polynomial(yValuesEOS, xValyesIV, yValuesIV);
     var yValuesIECum = everpolate.polynomial(yValuesEOS, xValyesIV, yValuesIV);
 
+    var maxIndex = 0;
+    var maxEpeak = 0;
+    var Iphotodiode1 = 0;
+    var Iphotodiode2 = 0;
+
     function handleFilesEOS() {
       var fileList = this.files;
       var reader = new FileReader();
@@ -262,11 +271,18 @@
         strDps = strDps.split("\n");
         xValuesEOS = [];
         yValuesEOS = [];
-
         for (var i = 0; i < strDps.length - 1; i++) {
           xValuesEOS.push(-strDps[i].match(/\S+/g)[0]);
           yValuesEOS.push(strDps[i].match(/\S+/g)[2]);
+          if (Math.abs(strDps[i].match(/\S+/g)[2]) > maxEpeak) {
+            maxIndex = i;
+            maxEpeak = Math.abs(strDps[i].match(/\S+/g)[2]);
+            console.log(maxIndex + " = " + maxEpeak);
+          }
         }
+        Iphotodiode1 = strDps[maxIndex].match(/\S+/g)[9];
+        Iphotodiode2 = strDps[maxIndex].match(/\S+/g)[10];
+
         yValuesEOSbiased = yValuesEOS.map(x => +x + +biasV);
         drawUpdate('plotEOS', yValuesEOSbiased, xValuesEOS);
         updateIEcurves();
@@ -372,6 +388,25 @@
         return yValuesIECum[i] = +a + +b - +setpoint;
       }, 0);
       drawUpdate('plotIEcum', xValyesIE, yValuesIECum)
+
+      let EOS_Delta_phi_ = (Iphotodiode1 - Iphotodiode2) / (+Iphotodiode1 + +Iphotodiode2); // [pm/V];
+      const EOS_lambda = document.getElementById('EOS_lambda').value;
+      const EOS_r41 = document.getElementById('EOS_r41').value;
+      const EOS_n = document.getElementById('EOS_n').value;
+      const EOS_L = document.getElementById('EOS_L').value;
+      console.log(EOS_lambda + " = " + pi + " = " + Math.pow(EOS_n, 3) + " = " + EOS_r41 + " = " + EOS_L);
+      let eFieldPeak = EOS_Delta_phi_ * EOS_lambda / (2 * pi * Math.pow(EOS_n, 3) * EOS_r41 * EOS_L * 1E-4);
+      document.getElementById("eFieldPeak").innerHTML = eFieldPeak.toPrecision(4);
+      document.getElementById("EFlambda").innerHTML = EOS_lambda;
+      document.getElementById("EFr41").innerHTML = EOS_r41;
+      document.getElementById("EFn0").innerHTML = EOS_n;
+      document.getElementById("EFL").innerHTML = EOS_L;
+      document.getElementById("EFIPd1_1").innerHTML = Iphotodiode1;
+      document.getElementById("EFIPd2_1").innerHTML = Iphotodiode2;
+      document.getElementById("EFIPd1_2").innerHTML = Iphotodiode1;
+      document.getElementById("EFIPd2_2").innerHTML = Iphotodiode2;
+      document.getElementById("peakEFcalcDiv").style.setProperty('visibility', 'visible');
+      console.log(Iphotodiode1 + " = " + Iphotodiode2 + " = " + EOS_Delta_phi_ + " = " + eFieldPeak);
     }
 
 
