@@ -33,6 +33,71 @@
   </ul>
   <hr>
   <div>
+
+    <h4>THz related Calculations</h4>
+    <!--<form id="pulseEnergyCalc">-->
+    <input type="text" id="laserRepRate" value="250E3" onchange="THzCustomCalc(0)" />
+    <label for="laserRepRate"> Laser repetition rate[Hz]</label><br>
+    <a>---------------------------------------------</a><br>
+    <input type="text" id="thzBeampower" value="27E-6" onchange="THzCustomCalc(1)"/>
+    <label for="thzBeampower"> THz beam power [W]</label><br>
+    <input type="text" id="energyPerPulse" value="1.08E-10"  onchange="THzCustomCalc(2)"/>
+    <label for="energyPerPulse"> Energy per pulse [J]</label><br>
+    <a>---------------------------------------------</a><br>
+    <input type="text" id="thzCurrent" value="1" onchange="THzCustomCalc(3)" />
+    <label for="thzCurrent"> THz current [pA]</label><br>
+    <input type="text" id="ePerPulse" value="24.966" onchange="THzCustomCalc(4)" />
+    <label for="ePerPulse"> Electrons per pulse</label><br>
+    <!--<p><a>Energy per Pulse: </a><strong><a id="energyPerPulse"></a></strong></p>-->
+    <!--</form>-->
+    <script>
+      function THzCustomCalc(paramUpdated) {
+        console.log('THzCustomCalc'+paramUpdated);
+        try {
+
+            let thzBeampower = document.getElementById('thzBeampower').value;
+            let laserRepRate = document.getElementById('laserRepRate').value;
+            let energyPerPulse = document.getElementById('energyPerPulse').value;
+            let thzCurrent = document.getElementById('thzCurrent').value;
+            let ePerPulse = document.getElementById('ePerPulse').value;
+          switch (paramUpdated) {
+            case 0: // laserRepRate
+              energyPerPulse = thzBeampower / laserRepRate; // [pm/V]
+              document.getElementById("energyPerPulse").value= energyPerPulse.toPrecision(6);
+              ePerPulse = thzCurrent*1E-12 / (laserRepRate*e); // [pm/V]
+              document.getElementById("ePerPulse").value= ePerPulse.toPrecision(6);
+              break;
+            case 1: //thzBeampower
+              energyPerPulse = thzBeampower / laserRepRate; // [pm/V]
+              document.getElementById("energyPerPulse").value= energyPerPulse.toPrecision(6);
+              break;
+            case 2: //energyPerPulse
+              thzBeampower = energyPerPulse * laserRepRate; // [pm/V]
+              document.getElementById("thzBeampower").value= thzBeampower.toPrecision(6);
+              break;
+            case 3: //thzCurrent
+              ePerPulse = thzCurrent*1E-12 / (laserRepRate*e); // [pm/V]
+              document.getElementById("ePerPulse").value= ePerPulse.toPrecision(6);
+              break;
+            case 4: //thzCurrent
+              thzCurrent = ePerPulse * (laserRepRate*e)/1E-12; // [pm/V]
+              document.getElementById("thzCurrent").value= thzCurrent.toPrecision(6);
+              break;
+            default:
+              console.log('Nothing detected '+paramUpdated);
+          }
+          //document.getElementById("energyPerPulse").disable=false;
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+      /*document.getElementById('pulseEnergyCalc').addEventListener("input", function() {
+        pulseEnergyCalc()
+      });*/
+      THzCustomCalc(0);
+    </script>
+    <hr />
     <h4>Scan Speed Calculator for THz scanning</h4>
     <form id="scanSpeedCalc">
       <input type="text" id="lockinTimeConstant" value="10" />
@@ -69,38 +134,12 @@
   </script>
   </div>
   <hr />
-  <h4>Pulse Energy Calculator</h4>
-  <form id="pulseEnergyCalc">
-    <input type="text" id="thzBeampower" value="27E-6" />
-    <label for="thzBeampower"> THz beam power [W]</label><br>
-    <input id="laserRepRate" type="text" value="250E3" />
-    <label for="laserRepRate"> Laser repetition rate[Hz]</label><br>
-    <p><a>Energy per Pulse: </a><strong><a id="energyPerPulse"></a></strong></p>
-  </form>
-  <script>
-    function pulseEnergyCalc() {
-      try {
-        const thzBeampower = document.getElementById('thzBeampower').value;
-        const laserRepRate = document.getElementById('laserRepRate').value;
-        let energyPerPulse = thzBeampower / laserRepRate; // [pm/V]
-        document.getElementById("energyPerPulse").innerHTML = energyPerPulse + '  J';
-      } catch (err) {
-        console.error(err)
-        alert(err)
-      }
-    }
-    document.getElementById('pulseEnergyCalc').addEventListener("input", function() {
-      pulseEnergyCalc()
-    });
-    pulseEnergyCalc()
-  </script>
-  <hr />
   <h4>Lock-in Voltage Output Calibration</h4><a>
     \begin{equation} I_{THz,avg}=(e f_{rep})\times N_e^{-}=g\ s\ K_{5077}\frac{V_{out}}{10 V} \end{equation}
     \begin{equation} N_e^{-}=K_{5077}\times s \times 2596 [e^- /V^2] \times V_{out} \end{equation}
   </a>
   <form id="lockInCalibration">
-    <input type="text" id="lockInVout" value="0" />
+    <input type="text" id="lockInVout" value="0.000113122172" />
     <label for="lockInVout"> Lock-In Voltage Out</label><br>
     <input type="text" id="lockInSensitivity" value="50" />
     <label for="lockInSensitivity"> Lock-In Sensitivity [mV/nA]</label><br>
@@ -128,11 +167,11 @@
         let k5077 = 0;
         switch (ivp) {
           case 'ivp100':
-            gainFirstAmplifier = 0;
+            gainFirstAmplifier = 1.04;
             k5077 = 0;
             break;
           case 'ivp200':
-            gainFirstAmplifier = 0;
+            gainFirstAmplifier = 1.04;
             k5077 = 0;
             break;
           case 'ivp300':
@@ -334,7 +373,7 @@
       }
 
       function drawInit(plotID, xValues, yValues, plotTitle, xLabel, yLabel) {
-        console.log('drawInit');
+        //console.log('drawInit');
         //console.log('abs: ' + Math.abs(xValues) + ' MAX: ' + absMax);
 
         maxRangex1 = Math.min(xValues);
@@ -368,7 +407,7 @@
       }
 
       function drawUpdate(plotID, xValues, yValues) {
-        console.log('drawUpdate');
+        //console.log('drawUpdate');
         //console.log('abs: ' + Math.abs(xValues) + ' MAX: ' + absMax);
         plotData = [{
           x: xValues,

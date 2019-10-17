@@ -385,6 +385,77 @@
     </a>
   </div>
 
+  <hr />
+  <h4>Current to Voltage Amplifier (PreAmp)</h4>
+  <div class="text">
+    <a> \begin{equation} f_{corner}= \frac{1}{2 \pi R_{FB} C_{stray}} \end{equation}
+      \begin{equation} V_{out}= - I_{in} \frac{R_{FB}}{\sqrt{1+(w R_{FB} C_{stray})^2}} \end{equation}
+      \begin{equation} I_{noise}= \sqrt{\frac{4 K_B T f_{corner}}{R_{FB} }} \end{equation}
+    </a>
+  </div>
+  <form id="preamp">
+    <input type="text" id="rFB" value="1E9" />
+    <label for="rFB"> Resistor [$\Omega$]</label><br>
+    <input id="cStray" type="text" value="0.5E-12" />
+    <label for="cStray"> Stray Capacitance [F]</label><br>
+    <input id="preFreq" type="text" value="10E3" />
+    <label for="preFreq"> Gain Frequency [Hz]</label><br>
+    <input id="preTemp" type="text" value="300" />
+    <label for="preTemp"> Temperature [K]</label><br>
+    <p><a>Corner Frequency (Bandwidth) : </a><strong><a id="cornerFreq"></a></strong></p>
+    <p><a>Gain (AC) : </a><strong><a id="gainAC"></a></strong></p>
+    <p><a>Johnson Noise ($I_{noise}$) : </a><strong><a id="iNoise"></a></strong></p>
+  </form>
+  <div id="preampGainPlot"></div>
+  <div id="preampNoisePlot"></div>
+  <script>
+    function preamp() {
+      try {
+        const rFB = document.getElementById('rFB').value;
+        const cStray = document.getElementById('cStray').value;
+        const preFreq = 2 * pi * document.getElementById('preFreq').value;
+        const preTemp = document.getElementById('preTemp').value;
+        let cornerFreq = 1 / (2 * pi * rFB * cStray); // [pm/V]
+        let gainAC = rFB / math.sqrt(+1 + +math.pow(preFreq * rFB * cStray, 2)); // [pm/V]
+        let iNoise = math.sqrt(4 * k * preTemp * cornerFreq / rFB); // [pm/V]
+        document.getElementById("cornerFreq").innerHTML = cornerFreq + '  Hz';
+        document.getElementById("gainAC").innerHTML = gainAC + '  ';
+        document.getElementById("iNoise").innerHTML = iNoise + '  A';
+
+        let xFreq = math.range(500, 100E3, 100).toArray();
+        let gainY = xFreq.map(F => rFB / math.sqrt(1 + +math.pow(F * 2 * pi * rFB * cStray, 2)));
+        let NoiseY = xFreq.map(F => math.sqrt(4 * k * preTemp * F / rFB));
+        let Noise0Y = xFreq.map(F => math.sqrt(4 * k * preTemp * F / rFB));
+        const gainFunct = {
+          x: xFreq,
+          y: gainY,
+          type: 'scatter',
+          name: 'Gain'
+        }
+        var layout = {
+          //title: 'Free electron & potential barrier',
+          xaxis: {
+            title: ' [Hz]',
+            autorange: true,
+            type: 'log'
+          },
+          yaxis: {
+            title: 'Gain',
+            autorange: true
+          }
+        };
+        Plotly.newPlot('preampGainPlot', [gainFunct], layout)
+      } catch (err) {
+        console.error(err)
+        alert(err)
+      }
+    }
+    document.getElementById('preamp').addEventListener("input", function() {
+      preamp()
+    });
+    preamp()
+  </script>
+  <hr />
 
 </body>
 

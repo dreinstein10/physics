@@ -50,7 +50,10 @@
       <input id="volt" type="text" value="1" />
       <label for="volt">(V) Voltage</label><br>
       <select id="piezoMaterial">
-    <option value="pzt5a">PZT-5A</option>
+    <option value="pzt4">PZT-4</option>
+    <option value="pzt5a" selected>PZT-5A</option>
+    <option value="pzt5h">PZT-5H</option>
+    <option value="pzt8">PZT-8</option>
     <option value="other">Other</option>
   </select>
       <label for="piezoMaterial">Material of Piezo Scanner</label><br>
@@ -74,12 +77,70 @@
           let d33 = 0; // [pm/V]
           let d15 = 0; // [pm/V]
           let kT33 = 0; // [pm/V]
-          switch (piezoMat) {
+          switch (piezoMat) { //   Source:  https://bostonpiezooptics.com/ceramic-materials-pzt
             case 'pzt5a':
-              d31 = -171; // [pm/V]
+              k33 = 0.710;
+              k31 = 0.340;
+              k15 = 0.69;
+              kp = 0.6;
               d33 = 374; // [pm/V]
+              d31 = -171; // [pm/V]
               d15 = 585; // [pm/V]
+              g33 = 24.8;
+              g31 = -11.4;
+              g15 = 38.2;
               kT33 = 1700; // [pm/V]
+              kT11 = 1730;
+              sE33 = 18.8;
+              sE11 = 15.0;
+              break;
+            case 'pzt4':
+              k33 = 0.700;
+              k31 = 0.330;
+              k15 = 0.71;
+              kp = 0.58;
+              d33 = 295; // [pm/V]
+              d31 = -122; // [pm/V]
+              d15 = 500; // [pm/V]
+              g33 = 24.9;
+              g31 = -10.6;
+              g15 = 39;
+              kT33 = 1300; // [pm/V]
+              kT11 = 1475;
+              sE33 = 15.5;
+              sE11 = 12.3;
+              break;
+            case 'pzt5h':
+              k33 = 0.750;
+              k31 = 0.390;
+              k15 = 0.680;
+              kp = 0.65;
+              d33 = 585; // [pm/V]
+              d31 = -265; // [pm/V]
+              d15 = 730; // [pm/V]
+              g33 = 19.7;
+              g31 = -8.5;
+              g15 = 29;
+              kT33 = 3400; // [pm/V]
+              kT11 = 3130;
+              sE33 = 20;
+              sE11 = 15.6;
+              break;
+            case 'pzt8':
+              k33 = 0.64;
+              k31 = 0.300;
+              k15 = 0.55;
+              kp = 0.51;
+              d33 = 225; // [pm/V]
+              d31 = -97; // [pm/V]
+              d15 = 330; // [pm/V]
+              g33 = 24;
+              g31 = -10.9;
+              g15 = -28.9;
+              kT33 = 1000; // [pm/V]
+              kT11 = 1290;
+              sE33 = 13.5;
+              sE11 = 10.0;
               break;
             default:
               d31 = 0; // [pm/V]
