@@ -457,6 +457,351 @@
   </script>
   <hr />
 
+<!--  ENERGY BAND DIAGRAMS -->
+
+  <div class="energy_band_diagram dashedBorder">
+    <form id="form_ebd">
+      <!--
+      <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
+      <input id="biasV" type="text" value="0.8" />
+      <label for="eq">Equation</label><br>-->
+      <input id="workf_tip" type="text" value="4.5" />
+      <label for="workf_tip"> ($\phi_t$) Tip workfunction [eV]</label><br>
+      <input type="text" id="workf_sample" value="5.1" />
+      <label for="workf_sample">($\phi_s$) Sample workfunction [eV] </label><br>
+      <input type="range" min="-10" max="10" value="0" step="0.05" class="slider" id="biasV" style="width:300px;">
+      <label for="biasV">(<a id="biasV_out"></a> V) Bias voltage [V]</label><br>
+      <input id="zgap" type="text" value="500" />
+      <label for="zgap">(z) Tip-sample distance [nm]</label><br>
+      <input id="photonEnergy" type="text" value="1.55" />
+      <label for="photonEnergy">(hv) Photon Energy [eV]</label><br>
+      <input id="photonMultip" type="number" min="0" value="4" />
+      <label for="photonMultip">Photon Multiplier</label><br>
+    </form>
+    <div id="plot_ebd"></div>
+    <script>
+      function draw_ebd() {
+        try {
+          const limit = 1.5e-9
+          const step = 0.01e-9
+          const eStep = 1e-2
+          const workf_sample = document.getElementById('workf_sample').value
+          const workf_tip = document.getElementById('workf_tip').value
+          const biasV = document.getElementById('biasV').value
+          const singlePhotonEnergy = document.getElementById('photonEnergy').value
+          const photonMultiplier = document.getElementById('photonMultip').value
+          const photonEnergy = singlePhotonEnergy*photonMultiplier
+          const vHeight = document.getElementById('vHeight').value
+          const vWidth = 1.5E-9
+          const zGap = math.multiply(document.getElementById('zgap').value, 1E-9)
+          const eField=1E-9*(workf_tip-(workf_sample-biasV))/zGap
+          let photonMultiplier2 = photonMultiplier
+          /*if (photonMultiplier>1) {
+            photonMultiplier2=1
+          }*/
+          const photonEnergy2 = singlePhotonEnergy*photonMultiplier2
+          /*if (vWidth > limit) {
+            const limit = vWidth * 2
+            const step = limit / 50
+          }*/
+          let xValues = math.range(-limit, +limit+vWidth, step).toArray()
+          let diagonal=workf_sample-workf_tip-biasV
+          let diagonalBarrier = math.range(workf_tip, +workf_tip+diagonal, diagonal / (vWidth / step)).toArray()
+          //console.log('diagonal Length: ',diagonalBarrier.length);
+          if (math.abs(diagonal)<1E-14) {
+            diagonal=0.1
+            diagonalBarrier = math.range(workf_tip, +workf_tip+diagonal, diagonal / (vWidth / step)).toArray()
+            diagonalBarrier = Array(diagonalBarrier.length).fill(workf_tip)
+          }
+          let minYvalue=math.min(-2,-biasV-2)
+          let maxEvalueTip=math.max(workf_tip,+photonEnergy+0.2)
+          let arrowsSpacing=math.min(0.15,vWidth*1E9/6)
+          let eValues = math.range(minYvalue, maxEvalueTip, eStep).toArray()
+          let eValuesSample = math.add(eValues,-biasV)
+          //let FermiDiracDistribution=1/(+math.exp((+eValues-workf_tip)/(25E-3))+1)
+          let maxFermiDiracAmplitude=vWidth*1E9/6
+          let FermiDiracDistributionTip = math.zeros(eValues.length).toArray();
+          let FermiDiracDistributionSample = math.zeros(eValues.length).toArray()
+          for (var i = 0; i <= photonMultiplier; i++) {
+            FermiDiracDistributionTip=math.add(FermiDiracDistributionTip,eValues.map(E => ((+photonMultiplier+1-i)/(+photonMultiplier+1))*(1/(+math.exp((+E-i*singlePhotonEnergy)/(25E-3))+1))));
+            //FermiDiracDistributionSample=math.add(FermiDiracDistributionSample,eValues.map(E => -((+photonMultiplier+1-i)/(+photonMultiplier+1))*(1/(+math.exp((+E-i*singlePhotonEnergy)/(25E-3))+1))));
+          }
+          for (var i = 0; i <= photonMultiplier2; i++) {
+            FermiDiracDistributionSample=math.add(FermiDiracDistributionSample,eValues.map(E => ((+photonMultiplier2+1-i)/(+photonMultiplier2+1))*(1/(+math.exp((+E-i*singlePhotonEnergy)/(25E-3))+1))));
+          }
+          FermiDiracDistributionTip=math.multiply(FermiDiracDistributionTip,maxFermiDiracAmplitude,1/math.max(FermiDiracDistributionTip))
+          FermiDiracDistributionSample=math.multiply(FermiDiracDistributionSample,maxFermiDiracAmplitude,-1/math.max(FermiDiracDistributionSample))
+          FermiDiracDistributionSample=math.add(vWidth*1E9,FermiDiracDistributionSample)
+
+          for (var i = 0; i < eValuesSample.length ; i++) {
+            if (eValuesSample[i]<minYvalue) {
+              eValuesSample[i]=null
+              FermiDiracDistributionSample[i]=null
+            }
+          }
+          //console.log('y-step: ',diagonal / (vWidth / step));
+          //console.log('x-step: ',(vWidth / step));
+          //console.log('info: ',diagonalBarrier[math.round(diagonalBarrier.length/2)],' === ');
+          const energyValues = Array(xValues.length).fill(photonEnergy);
+          const energyValues2 = Array(xValues.length).fill(photonEnergy2-biasV);
+          for (var i = 0; i < limit / step ; i++) {
+            energyValues2.splice(i,1,null)
+          }
+          for (var i = limit / step + vWidth / step; i < energyValues.length; i++) {
+            energyValues.splice(i,1,null)
+          }
+          const potentialValues = math.zeros(xValues.length).toArray();
+          for (var i = 0; i < diagonalBarrier.length; i++) {
+            potentialValues.splice((limit / step)+i,1,diagonalBarrier[i])
+          }
+          for (var i = limit / step + vWidth / step; i < potentialValues.length; i++) {
+            potentialValues.splice(i,1,-biasV)
+          }
+          document.getElementById("biasV_out").innerHTML = biasV;
+          document.getElementById("out_vHeight_J").innerHTML = ' \ \ => ( ' + (vHeight * e) + ' [J])';
+          // render the plot using plotly photonEnergy-biasV
+          xValues = math.multiply(xValues, 1E9)
+          const energyTrace = {
+            x: xValues,
+            y: energyValues,
+            type: 'scatter',
+            //name: 'Electron energy',
+            mode: 'lines',
+            line: {
+              dash: 'dot',
+              width: 0.5,
+              color:'red',
+            }
+          }
+          const energyTrace2 = {
+            x: xValues,
+            y: energyValues2,
+            type: 'scatter',
+            //name: 'Electron energy',
+            mode: 'lines',
+            line: {
+              dash: 'dot',
+              width: 0.5,
+              color:'red',
+            }
+          }
+          const potentialBarrier = {
+            x: xValues,
+            y: potentialValues,
+            type: 'scatter',
+            //name: 'Potential Barrier',
+            mode: 'lines',
+            line: {
+              shape: 'hv',
+              color:'green',
+            }
+          }
+          const FermiDiracDistTip = {
+            x: FermiDiracDistributionTip,
+            y: eValues,
+            type: 'scatter',
+            //name: 'Potential Barrier',
+            mode: 'lines',
+            line: {
+              shape: 'hv',
+              color: 'orange',
+            }
+          }
+          const FermiDiracDistSample = {
+            x: FermiDiracDistributionSample,
+            y: eValuesSample,
+            type: 'scatter',
+            //name: 'Potential Barrier',
+            mode: 'lines',
+            line: {
+              shape: 'hv',
+              color: 'orange',
+            }
+          }
+          var layout = {
+            //title: 'Free electron & potential barrier',
+            showlegend: false,
+            xaxis: {
+              //title: 'X [nm]',
+              autorange: true,
+              showticklabels: false
+            },
+            yaxis: {
+              title: 'Energy [eV]',
+              autorange: true,/*
+              autorange: false,
+              range:[-12, 7],*/
+            },
+            annotations: [{
+              x: -limit*1E9/3,
+              y: photonEnergy,
+              axref: 'x',
+              ayref: 'y',
+              text: 'Photon<br />Energy<br />'+photonEnergy+' eV',
+              showarrow: true,
+              arrowhead: 3,
+              arrowcolor: "red",
+              ax: -limit*1E9/3,
+              ay: 0,
+              font: {
+                color: "red",
+              },
+            },{
+              x: +vWidth*1E9+limit*1E9/3,
+              y: photonEnergy2-biasV,
+              axref: 'x',
+              ayref: 'y',
+              text: 'Photon<br />Energy<br />'+photonEnergy2+' eV',
+              showarrow: true,
+              arrowhead: 3,
+              arrowcolor: "red",
+              ax: +vWidth*1E9+limit*1E9/3,
+              ay: -biasV,
+              font: {
+                color: "red",
+              },
+            },{
+              x: +vWidth*1E9-arrowsSpacing,
+              y: -biasV,
+              axref: 'x',
+              ayref: 'y',
+              text: 'Bias<br />'+biasV+' eV',
+              showarrow: true,
+              arrowhead: 3,
+              arrowcolor: "blue",
+              ax: +vWidth*1E9-arrowsSpacing,
+              ay: 0,
+              font: {
+                color: "blue",
+              },
+            },{
+              x: -arrowsSpacing,
+              y: workf_tip,
+              axref: 'x',
+              ayref: 'y',
+              text: "\u03A6 t<br />"+workf_tip+' eV',
+              showarrow: true,
+              arrowhead: 3,
+              arrowcolor: "gray",
+              ax: -arrowsSpacing,
+              ay: 0,
+              font: {
+                color: "gray",
+              },
+            },{
+              x: +vWidth*1E9+arrowsSpacing,
+              y: workf_sample-biasV,
+              axref: 'x',
+              ayref: 'y',
+              text: "\u03A6 s<br />"+workf_sample+' eV',
+              showarrow: true,
+              arrowhead: 3,
+              arrowcolor: "gray",
+              ax: +vWidth*1E9+arrowsSpacing,
+              ay: -biasV,
+              font: {
+                color: "gray",
+              },
+            },{
+              x: -limit*1E9/2,
+              y: -1,
+              axref: 'x',
+              ayref: 'y',
+              text: "Tip",
+              showarrow: false
+            },{
+              x: (vWidth+(limit)/2)*1E9,
+              y: -biasV-1,
+              axref: 'x',
+              ayref: 'y',
+              text: "Sample",
+              showarrow: false
+            },{
+              x: (vWidth/2)*1E9,
+              y: -1,
+              axref: 'x',
+              ayref: 'y',
+              text: (zGap*1E9).toPrecision(3)+' nm',
+              showarrow: false
+            },{
+              x: FermiDiracDistributionSample[0],
+              y: eValuesSample[0],
+              axref: 'x',
+              ayref: 'y',
+              text: "f(E)",
+              showarrow: false,
+              font: {
+                color: "orange",
+              },
+            },{
+              x: FermiDiracDistributionTip[0],
+              y: eValues[0],
+              axref: 'x',
+              ayref: 'y',
+              text: "f(E)",
+              showarrow: false,
+              font: {
+                color: "orange",
+              },
+            },{
+              x: vWidth*1E9/2,
+              y: +diagonalBarrier[math.round(diagonalBarrier.length/2)]+0.4,
+              axref: 'x',
+              ayref: 'y',
+              text: eField.toPrecision(3)+" V/nm",
+              showarrow: false,
+              font: {
+                color: "green",
+              },
+            },
+          ],
+          shapes: [
+        {
+            type: 'rect',
+            xref: 'x',
+            yref: 'y',
+            x0: -limit*1E9,
+            y0: 0,
+            x1: 0,
+            y1: minYvalue,
+            fillcolor: '#d3d3d3',
+            opacity: 0.5,
+            line: {
+                width: 0
+            }
+        },{
+            type: 'rect',
+            xref: 'x',
+            yref: 'y',
+            x0: vWidth*1E9,
+            y0: -biasV,
+            x1: (+vWidth+limit)*1E9,
+            y1: minYvalue,
+            fillcolor: '#d3d3d3',
+            opacity: 0.5,
+            line: {
+                width: 0
+            }
+        }
+      ]
+          };
+
+          const data = [ energyTrace, energyTrace2, potentialBarrier,FermiDiracDistTip,FermiDiracDistSample]
+          Plotly.newPlot('plot_ebd', data, layout)
+        } catch (err) {
+          console.error(err)
+          alert(err)
+        }
+      }
+      document.getElementById('form_ebd').addEventListener("input", function() {
+        draw_ebd()
+      });
+      draw_ebd()
+    </script>
+  </div>
+
+
+
 </body>
 
 </html>
