@@ -110,6 +110,7 @@
       <label for="pixelsPerLine"> Pixels per line</label><br>
       <p><a id="scanSpeedEq"> </a></p>
       <p><a>Scan Speed: </a><strong><a id="scanSpeed"></a></strong></p>
+      <p><a>Estimated time: </a><strong><a id="scanSpeedTime"></a></strong></p>
     </form>
     <script>
       function scanSpeedCalc() {
@@ -119,9 +120,10 @@
         const scanWindowSize = document.getElementById('scanWindowSize').value;
         const pixelsPerLine = document.getElementById('pixelsPerLine').value;
         let scanSpeed = scanWindowSize * 1000 / (pixelsPerLine * timeConstantMultiplier * lockinTimeConstant); // [pm/V]
+        let scanSpeedTime = 2*(scanWindowSize/scanSpeed)*pixelsPerLine/60; // [pm/V]
         document.getElementById("scanSpeed").innerHTML = scanSpeed + '  nm/s';
         document.getElementById("scanSpeedEq").innerHTML = '('+scanWindowSize+'nm/1 line)(1 line/'+pixelsPerLine+' pixels)(1 pixel/(('+timeConstantMultiplier+')('+lockinTimeConstant+' ms)))(1000 ms/1 s)=' +scanSpeed+ '  nm/s';
-
+				document.getElementById("scanSpeedTime").innerHTML = scanSpeedTime.toFixed(2) + '  min';
       } catch (err) {
         console.error(err)
         alert(err)
@@ -132,6 +134,33 @@
     });
     scanSpeedCalc()
   </script>
+
+	<hr />
+	<h4>Conuctance Lock-In calculation</h4>
+	<form id="conductanceAmpCalc">
+		<input type="text" id="conductanceAmplitude" value="10" />
+		<label for="conductanceAmplitude"> Modulation Peak Amplitude [mV] </label><br>
+			<input type="text" id="conductanceAttenuation" value="10" />
+			<label for="conductanceAttenuation"> Conductance Attenuator </label><br>
+		<p><a>Lockin Amplitude: </a><a id="conductanceLockinInput"></a></p>
+	</form>
+	<script>
+		function conductanceAmpCalc() {
+		try {
+			const conductanceAmplitude = document.getElementById('conductanceAmplitude').value/1000;
+			const conductanceAttenuation = document.getElementById('conductanceAttenuation').value;
+			let conductanceLockinInput = conductanceAmplitude * conductanceAttenuation / Math.sqrt(2); // [pm/V]
+			document.getElementById("conductanceLockinInput").innerHTML = '('+conductanceAmplitude+' V)('+conductanceAttenuation+')/(√2)=<strong>' +conductanceLockinInput.toFixed(3)+' V<sub>RMS</sub></strong>';
+		} catch (err) {
+			console.error(err)
+			alert(err)
+		}
+	}
+	document.getElementById('conductanceAmpCalc').addEventListener("input", function() {
+		conductanceAmpCalc()
+	});
+	conductanceAmpCalc()
+</script>
   </div>
   <hr />
   <h4>Lock-in Voltage Output Calibration</h4><a>
