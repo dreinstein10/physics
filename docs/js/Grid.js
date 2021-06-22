@@ -83,7 +83,7 @@ HT.Grid.prototype.GetHexId = function(row, col) {
 		letters = HT.Grid.Static.Letters[letterIndex%26] + letters;
 		letterIndex -= 26;
 	}
-
+	//return '';
 	return HT.Grid.Static.Letters[letterIndex] + letters + (col + 1);
 };
 

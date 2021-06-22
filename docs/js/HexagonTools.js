@@ -104,7 +104,7 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.textAlign = "center";
 		ctx.textBaseline = 'middle';
 		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
-		ctx.fillText(this.Id, this.MidPoint.X, this.MidPoint.Y);
+		//ctx.fillText(this.Id, this.MidPoint.X, this.MidPoint.Y);     // <======== Uncomment this to display hexagon ID
 	}
 
 	if(this.PathCoOrdX !== null && this.PathCoOrdY !== null && typeof(this.PathCoOrdX) != "undefined" && typeof(this.PathCoOrdY) != "undefined")
@@ -115,7 +115,15 @@ HT.Hexagon.prototype.draw = function(ctx) {
 		ctx.textAlign = "center";
 		ctx.textBaseline = 'middle';
 		//var textWidth = ctx.measureText(this.Planet.BoundingHex.Id);
-		ctx.fillText("("+this.PathCoOrdX+","+this.PathCoOrdY+")", this.MidPoint.X, this.MidPoint.Y + 10);
+		//ctx.fillText("("+this.PathCoOrdX+","+this.PathCoOrdY+")", this.MidPoint.X, this.MidPoint.Y + 10);
+		console.log(this.PathCoOrdY+' == '+Math.floor(this.PathCoOrdY/2));
+		var newXindex=this.PathCoOrdX-2*Math.floor(this.PathCoOrdY/2)-1;
+		if (this.PathCoOrdY % 2 ==0) {
+			newXindex++;
+		}
+		if (newXindex>=this.PathCoOrdY || (+newXindex+this.PathCoOrdY ==0)) {
+		ctx.fillText("("+newXindex+","+this.PathCoOrdY+")", this.MidPoint.X, this.MidPoint.Y + 10);   // <======== Modified to display proper SWCNT index
+		}
 	}
 
 	if(HT.Hexagon.Static.DRAWSTATS)
