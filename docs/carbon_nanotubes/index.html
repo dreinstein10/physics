@@ -71,9 +71,9 @@ When |m – n| = 3k (k is integer), the tube is metallic; but if |m – n| = 3k 
       <!--
       <input type="text" id="eq" value="4 * sin(x) + 5 * cos(x/2)" />
       <label for="eq">Equation</label><br>-->
-      <input id="CNT_n" type="number" step="1"  pattern="\d+" value="4" />
+      <input id="CNT_n" type="number" step="1"  pattern="\d+" value="6" />
       <label for="CNT_n"> (n) Number of unit vectors along $a_2$<a id="out_vHeight_J"></a></label><br>
-      <input id="CNT_m" type="number" step="1"  pattern="\d+" value="2" />
+      <input id="CNT_m" type="number" step="1"  pattern="\d+" value="5" />
       <label for="CNT_m">(m) Number of unit vectors along $a_1$ <a id="out_energy_J"></a></label><br>
       <a>CNT type: </a><strong><a id="CNT_type"></a> </strong><br>
       <a>Diameter: </a><strong> <a id="CNT_diameter"></a> nm </strong><br>
@@ -142,15 +142,21 @@ console.log(math.abs(CNT_m - CNT_n)%3);
       HT.Hexagon.Static.HEIGHT = width;
       HT.Hexagon.Static.SIDE = z;
       //  drawHexGrid();
-      var grid = new HT.Grid(800, 400);
+      var grid = new HT.Grid(550, 320);
       var canvas = document.getElementById("hexCanvas");
       var ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, 800, 400);
+      ctx.clearRect(0, 0, 800, 600);
       for (var h in grid.Hexes) {
         grid.Hexes[h].draw(ctx);
 				//console.log(grid.Hexes[h]);
       }
       var offset = x;
+			ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.strokeStyle = "#FF0000";
+      ctx.moveTo(0, offset);
+      ctx.lineTo(CNT_n * height+CNT_m * height/2, offset+CNT_m*(z*3/2));
+      ctx.stroke();
       ctx.strokeStyle = "#0000FF";
       ctx.beginPath();
       ctx.moveTo(0, offset);
@@ -158,11 +164,6 @@ console.log(math.abs(CNT_m - CNT_n)%3);
       ctx.lineTo(CNT_n * height+CNT_m * height/2, offset+CNT_m*(z*3/2));
       ctx.lineTo(CNT_m * height/2, offset+CNT_m*(z*3/2));
       ctx.lineTo(0, offset);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.strokeStyle = "#FF0000";
-      ctx.moveTo(0, offset);
-      ctx.lineTo(CNT_n * height+CNT_m * height/2, offset+CNT_m*(z*3/2));
       ctx.stroke();
 /*
   var update = {'marker':{ size:16}};

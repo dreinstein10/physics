@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html>
 
 <head>
@@ -45,9 +45,9 @@
     <label for="energyPerPulse"> Energy per pulse [J]</label><br>
     <a>---------------------------------------------</a><br>
     <input type="text" id="thzCurrent" value="1" onchange="THzCustomCalc(3)" />
-    <label for="thzCurrent"> THz current [pA]</label><br>
+    <label for="thzCurrent"> Average THz current [pA] with THz modulation OFF (divide by 2 if modulation was ON)</label><br>
     <input type="text" id="ePerPulse" value="24.966" onchange="THzCustomCalc(4)" />
-    <label for="ePerPulse"> Electrons per pulse</label><br>
+    <label for="ePerPulse"> Electrons per pulse with THz modulation OFF (multiply by 2 if modulation was ON)</label><br>
     <!--<p><a>Energy per Pulse: </a><strong><a id="energyPerPulse"></a></strong></p>-->
     <!--</form>-->
     <script>
@@ -517,27 +517,34 @@
 
     <!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
     <hr />
-    <h4>Field Penetration</h4>
+    <h4>Field Penetration through a thin sample</h4>
     <div class="dashedBorder twoColumnsRow">
       <div class="twoColumns">
         <form id="formFieldPenetration1">
-          <input type="text" id="nReal" value="270" />
+          <input type="text" id="nReal" value="0.15352" />
           <label for="nReal">$n$ Real part of $\tilde{n}$ </label><br>
-          <input id="kappaImag" type="text" value="294" />
+          <input id="kappaImag" type="text" value="4.9077" />
           <label for="kappaImag"> $\kappa$ Imaginary part of $\tilde{n}$</label><br>
-          <input id="lambda1" type="text" value="248E-6" />
+          <input id="lambda1" type="text" value="0.8E-6" />
           <label for="lambda1">$\lambda$ Wavelength [m]</label><br>
-          <input id="length1" type="text" value="67E-9" />
-          <label for="length1">l [m]</label><br>
+          <input id="length1" type="text" value="100E-9" />
+          <label for="length1">thickness [m]</label><br>
+          <input id="incidentAngle" type="text" value="0" />
+          <label for="incidentAngle">Incident angle [deg]</label><br>
         </form>
           <p>$v=$<strong><a id="phaseVelocity"></a></strong> m/s</p>
           <p>$\alpha=$<strong><a id="absorptionCoeff"></a></strong> $m^{-1}$</p>
           <p>$\delta_p=$<strong><a id="penetrationDepth"></a></strong> $nm$</p>
           <p>$\delta_e=$<strong><a id="skinDepth"></a></strong> $nm$</p>
-          <p>$R=$<strong><a id="reflectancia1"></a></strong></p>
-          <p>$T=$<strong><a id="trnsmisivity1"></a></strong></p>
+          <p>$R_\perp=$<strong><a id="reflectancia1"></a></strong></p>
+          <p>$T_\perp=$<strong><a id="transmisivity1"></a></strong></p>
           <p>$\epsilon_1=$<strong><a id="dielectricConstantReal"></a></strong></p>
           <p>$\epsilon_2=$<strong><a id="dielectricConstantImag"></a></strong></p>
+          <p>$\theta_t=$<strong><a id="transmissionAngle"></a></strong></p>
+          <p>$R_s=$<strong><a id="reflectanceS"></a></strong></p>
+          <p>$R_p=$<strong><a id="reflectanceP"></a></strong></p>
+          <p>$T_s=$<strong><a id="transmitanceS"></a></strong></p>
+          <p>$T_p=$<strong><a id="transmitanceP"></a></strong></p>
 
       </div>
       <div class="twoColumns">
@@ -563,6 +570,18 @@
           <p>Max. Avg. current= <strong><a id="maxAvgCurrent"></a></strong> pA</p>
       </div>
     </div>
+
+		<a>where {Volume}_{Hemisphere}=$\frac{2}{3}\pi r^3$ , (mobility) $\mu=V_{atomic}*\sigma / e$, (drift velocity) $v=\mu E$ , $I_{avg}= (Num)e^- \times 1.602E^{-19} C \times LaserRepRate $ </a><br /><br /><br />
+
+
+				<div class="grid-container">
+				<div class="grid-item">
+					<div id="plotReflectivity"></div>
+				</div>
+				<div class="grid-item">
+					<div id="plotTransmisivity"></div>
+				</div>
+				</div>
     <script>
       function fieldPenetration() {
         try {
@@ -570,6 +589,7 @@
           const kappaImag = document.getElementById('kappaImag').value;
           const lambda1 = document.getElementById('lambda1').value;
           const length1 = document.getElementById('length1').value;
+          let incidentAngle = document.getElementById('incidentAngle').value*Math.PI/180;
           const atomicVolume = document.getElementById('atomicVolume').value;
           const ePerAtom = document.getElementById('ePerAtom').value;
           const conductivity = document.getElementById('conductivity').value;
@@ -582,7 +602,7 @@
           let penetrationDepth = 1E9 / absorptionCoeff;
           let skinDepth = 2 * penetrationDepth;
           let reflectancia1 = (+Math.pow(nReal - 1, 2) + +Math.pow(kappaImag, 2)) / (+Math.pow(+nReal + +1, 2) + +Math.pow(kappaImag, 2));
-          let trnsmisivity1 = (Math.pow(+1 - +reflectancia1, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectancia1 * reflectancia1 * Math.exp(-2 * absorptionCoeff * length1));
+          let transmisivity1 = (Math.pow(+1 - +reflectancia1, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectancia1 * reflectancia1 * Math.exp(-2 * absorptionCoeff * length1));
           let dielectricConstantReal = (+Math.pow(nReal, 2) - +Math.pow(kappaImag, 2));
           let dielectricConstantImag = 2 * nReal * kappaImag;
           let mobility = (atomicVolume * 1E6 / ePerAtom) * conductivity / e;
@@ -591,13 +611,21 @@
           let hemisphereVolume = 2 / 3 * Math.PI * Math.pow(distanceTraveled / 1E9, 3);
           let eInHemisphere = hemisphereVolume / atomicVolume;
           let maxAvgCurrent = eInHemisphere * e * laserRepRate3 * 1E12;
+          let n1 = math.complex(1, 0);
+          let n2 = math.complex(nReal, kappaImag);
+					let transmissionAngle=math.divide(math.multiply(math.asin(math.multiply(math.divide(n1,n2),math.sin(incidentAngle))),180),math.pi);
+					//  let reflectanceS = +Math.pow((n1*Math.cos(incidentAngle)-n2*Math.sqrt(1-Math.pow((n1/n2)*Math.sin(incidentAngle),2)))/(n1*Math.cos(incidentAngle)+n2*Math.sqrt(1-Math.pow((n1/n2)*Math.sin(incidentAngle),2))),2);
+          let reflectanceS = math.pow(math.abs(math.divide((math.subtract(math.multiply(n1,math.cos(incidentAngle)),math.multiply(n2,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))))),(math.add(math.multiply(n1,math.cos(incidentAngle)),math.multiply(n2,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))))))),2);
+					let reflectanceP = math.pow(math.abs(math.divide((math.subtract(math.multiply(n1,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))),math.multiply(n2,math.cos(incidentAngle)))),(math.add(math.multiply(n1,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))),math.multiply(n2,math.cos(incidentAngle)))))),2);
+          let transmitanceS = (Math.pow(+1 - +reflectanceS, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectanceS * reflectanceS * Math.exp(-2 * absorptionCoeff * length1));
+					let transmitanceP = (Math.pow(+1 - +reflectanceP, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectanceP * reflectanceP * Math.exp(-2 * absorptionCoeff * length1));
 
           document.getElementById("phaseVelocity").innerHTML = phaseVelocity;
           document.getElementById("absorptionCoeff").innerHTML = absorptionCoeff;
           document.getElementById("penetrationDepth").innerHTML = penetrationDepth;
           document.getElementById("skinDepth").innerHTML = skinDepth;
           document.getElementById("reflectancia1").innerHTML = reflectancia1;
-          document.getElementById("trnsmisivity1").innerHTML = trnsmisivity1;
+          document.getElementById("transmisivity1").innerHTML = transmisivity1;
           document.getElementById("dielectricConstantReal").innerHTML = dielectricConstantReal;
           document.getElementById("dielectricConstantImag").innerHTML = dielectricConstantImag;
           document.getElementById("mobility").innerHTML = mobility;
@@ -606,6 +634,34 @@
           document.getElementById("hemisphereVolume").innerHTML = hemisphereVolume;
           document.getElementById("eInHemisphere").innerHTML = eInHemisphere;
           document.getElementById("maxAvgCurrent").innerHTML = maxAvgCurrent;
+          document.getElementById("transmissionAngle").innerHTML = transmissionAngle;
+          document.getElementById("reflectanceS").innerHTML = reflectanceS;
+          document.getElementById("reflectanceP").innerHTML = reflectanceP;
+          document.getElementById("transmitanceS").innerHTML = transmitanceS+"   *using perp length, need to fix it";
+          document.getElementById("transmitanceP").innerHTML = transmitanceP+"   *using perp length, need to fix it";
+
+
+										      var xValuesReflectTransm = [...Array(91).keys()];
+										      var yValuesReflectS = [];
+													var yValuesTransmS = [];
+										      var yValuesReflectP = [];
+													var yValuesTransmP = [];
+													for (var i = 0; i < xValuesReflectTransm.length; i++) {
+														incidentAngle=i*Math.PI/180;
+														 reflectanceS = math.pow(math.abs(math.divide((math.subtract(math.multiply(n1,math.cos(incidentAngle)),math.multiply(n2,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))))),(math.add(math.multiply(n1,math.cos(incidentAngle)),math.multiply(n2,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))))))),2);
+														 reflectanceP = math.pow(math.abs(math.divide((math.subtract(math.multiply(n1,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))),math.multiply(n2,math.cos(incidentAngle)))),(math.add(math.multiply(n1,math.sqrt(math.subtract(1,math.pow(math.multiply(math.divide(n1,n2),math.sin(incidentAngle)),2)))),math.multiply(n2,math.cos(incidentAngle)))))),2);
+														 transmitanceS = (Math.pow(+1 - +reflectanceS, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectanceS * reflectanceS * Math.exp(-2 * absorptionCoeff * length1));
+														 transmitanceP = (Math.pow(+1 - +reflectanceP, 2) * Math.exp(-absorptionCoeff * length1)) / (+1 - +reflectanceP * reflectanceP * Math.exp(-2 * absorptionCoeff * length1));
+								            yValuesReflectS.push(reflectanceS);
+								            yValuesTransmS.push(transmitanceS);
+								            yValuesReflectP.push(reflectanceP);
+								            yValuesTransmP.push(transmitanceP);
+								          }
+													yValuesTransm=yValuesTransmS.concat(yValuesTransmP.reverse());
+													yValuesReflect=yValuesReflectS.concat(yValuesReflectP.reverse());
+													xValuesReflectTransm=xValuesReflectTransm.concat([...Array(91).keys()].map(i =>  90-i));
+													drawInit('plotReflectivity',  xValuesReflectTransm, yValuesReflect, 'Reflectivity Plot', 'Incident angle', 'Reflectivity');
+													drawInit('plotTransmisivity', xValuesReflectTransm, yValuesTransm, 'Transmisivity Plot', 'Incident angle', 'Transmisivity');
 
         } catch (err) {
           console.error(err)
@@ -619,8 +675,8 @@
         fieldPenetration()
       });
       fieldPenetration()
+
     </script>
-    <a>where {Volume}_{Hemisphere}=$\frac{2}{3}\pi r^3$ , (mobility) $\mu=V_{atomic}*\sigma / e$, (drift velocity) $v=\mu E$ , $I_{avg}= (Num)e^- \times 1.602E^{-19} C \times LaserRepRate $ </a><br />
 </body>
 
 </html>
