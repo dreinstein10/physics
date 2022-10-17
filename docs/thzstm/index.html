@@ -1,4 +1,4 @@
-\<!DOCTYPE html>
+Keldysh_beamTempWidth\<!DOCTYPE html>
 <html>
 
 <head>
@@ -677,6 +677,75 @@
       fieldPenetration()
 
     </script>
+
+
+
+		    <!-- /////////////////////////////////////////////////////////////////////////////////////////// -->
+		    <hr />
+		    <h4>Laser peak values and Keldysh parameter</h4>
+				<a>
+			    The Keldysh parameter is given by
+			    \begin{equation} \gamma=\sqrt{\frac{\Phi}{2K}}=\frac{\omega}{e F}\sqrt{2 m_e \Phi} \end{equation}
+					where $\Phi$ is the work function of the material, $K=\frac{e^2 F^2}{4 m_e \omega^2}$ is the ponderomotive force, $\omega$ is the laser frequency, $m_e$ is the electron mass and $F$ is the laser peak electric field.
+			  </a>
+			  <form id="keldysh_param_form">
+			    <input id="Keldysh_workfunct" type="text" value="4.5" />
+			    <label for="Keldysh_workfunct"> ($\Phi$) Material workfunction [eV]</label><br>
+			    <input id="Keldysh_beamPower" type="text" value="10E-3" />
+			    <label for="Keldysh_beamPower"> ($P_{avg}$) Beam average power [W]</label><br>
+			    <input id="Keldysh_beamWavelength" type="text" value="800E-9" />
+			    <label for="Keldysh_beamWavelength"> ($\lambda$) Pulse wavelength [m]</label><br>
+			    <input id="Keldysh_beamTempWidth" type="text" value="100E-15" />
+			    <label for="Keldysh_beamTempWidth"> ($t_p$) Temporal pulse width [s]</label><br>
+			    <input id="Keldysh_beamSizeDiam" type="text" value="216E-6" />
+			    <label for="Keldysh_beamSizeDiam"> ($d_p$) Beam spot size diameter [m]</label><br>
+			    <input id="Keldysh_beamRepRate" type="text" value="250E3" />
+			    <label for="Keldysh_beamRepRate">($f_{rep}$) Laser repetition rate [Hz]</label><br>
+			    <input id="Keldysh_fieldEnhanc" type="text" value="1" />
+			    <label for="Keldysh_fieldEnhanc"> Field enhancement </label><br>
+			    <p><a>Energy per pulse  $\epsilon_{pulse}=\dfrac{P_{avg}}{f_{rep}}$=</a><a id="Keldysh_energyPerPulse"></a></p>
+			    <p><a>Peak Power  $P_{pk}=\dfrac{\epsilon_{pulse}}{t_{p}}$=</a><a id="Keldysh_peakPower"></a></p>
+			    <p><a>Peak intensity  $I_{pk}=\dfrac{P_{pk}}{A_{area}}$=</a><a id="Keldysh_peakIntensity"></a></p>
+			    <p><a>Peak electric field  $E_{pk}=\sqrt{\dfrac{2 I_{pk}}{\varepsilon_0 c}}$=</a><a id="Keldysh_peakEField"></a></p>
+			    <p><a>Fluence  $H=\dfrac{\epsilon_{pulse}}{A_{area}}$=</a><a id="Keldysh_fluence"></a></p>
+			    <p><a>Keldysh Parameter <strong>$\gamma$=</a><a id="Keldysh_parameter"></strong></a></p>
+			  </form>
+			  <script>
+			    function keldysh_param_form() {
+			      try {
+			        const Keldysh_workfunct = document.getElementById('Keldysh_workfunct').value;
+			        const Keldysh_beamPower = document.getElementById('Keldysh_beamPower').value;
+			        const Keldysh_beamWavelength = document.getElementById('Keldysh_beamWavelength').value;
+			        const Keldysh_beamSizeDiam = document.getElementById('Keldysh_beamSizeDiam').value;
+			        const Keldysh_beamTempWidth = document.getElementById('Keldysh_beamTempWidth').value;
+			        const Keldysh_beamRepRate = document.getElementById('Keldysh_beamRepRate').value;
+			        const Keldysh_fieldEnhanc = document.getElementById('Keldysh_fieldEnhanc').value;
+							let Keldysh_beamFrequency=2*Math.PI*c/Keldysh_beamWavelength;
+							let beamArea=Math.PI*Math.pow(Keldysh_beamSizeDiam/2,2);
+							let ePerPulse=Keldysh_beamPower/Keldysh_beamRepRate;
+							let peakPower=ePerPulse/Keldysh_beamTempWidth;
+							let peakIntensity=peakPower/beamArea;
+							let peakEField=Math.sqrt(2*peakIntensity/(eps0*c))*Keldysh_fieldEnhanc;
+							let fluence=ePerPulse/beamArea;
+							let Keldysh_parameter=(Keldysh_beamFrequency/(e*peakEField))*Math.sqrt(2*me*(Keldysh_workfunct*e));
+
+			        document.getElementById("Keldysh_energyPerPulse").innerHTML = ePerPulse.toPrecision(2)+" J";
+			        document.getElementById("Keldysh_peakPower").innerHTML = peakPower.toPrecision(2)+" W ";
+			        document.getElementById("Keldysh_peakIntensity").innerHTML = (peakIntensity/10000).toPrecision(2)+" W/cm^2";
+			        document.getElementById("Keldysh_peakEField").innerHTML = (peakEField/1E2).toPrecision(2)+" V/cm = "+(peakEField/1E9).toPrecision(2)+" V/nm ";
+			        document.getElementById("Keldysh_fluence").innerHTML = (fluence*10000/1000).toPrecision(2)+" mJ/cm^2 ";
+			        document.getElementById("Keldysh_parameter").innerHTML = Keldysh_parameter;
+			      } catch (err) {
+			        console.error(err)
+			        alert(err)
+			      }
+			    }
+			    document.getElementById('keldysh_param_form').addEventListener("input", function() {
+			      keldysh_param_form()
+			    });
+			    keldysh_param_form()
+			  </script>
+
 </body>
 
 </html>
